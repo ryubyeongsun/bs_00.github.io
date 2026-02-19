@@ -8,6 +8,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  basePath: '/bs_00.github.io',
 }
 
 export default nextConfig
