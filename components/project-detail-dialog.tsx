@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Github, Calendar, User } from "lucide-react"
-import Image from "next/image"
+import Image, { StaticImageData } from "next/image"
 import { TroubleshootingDialog, TroubleshootingLog } from "./troubleshooting-dialog"
 
 // Project 타입 정의 (필요시 별도 타입 파일로 분리 가능)
@@ -25,8 +25,8 @@ export interface Project {
   task: string
   action: string
   result: string
-  image?: string
-  architecture?: string
+  image?: string | StaticImageData
+  architecture?: string | StaticImageData
   troubleshooting?: TroubleshootingLog
   link?: string // 배포 링크나 깃허브 링크가 있다면 추가 가능
 }

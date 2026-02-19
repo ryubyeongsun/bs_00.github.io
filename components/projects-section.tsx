@@ -1,5 +1,7 @@
 import ProjectCard from "./project-card"
 import { CodeBlock } from "./troubleshooting-dialog"
+import project1 from "@/public/projects/project1-thumbnail.png"
+import project2 from "@/public/projects/project2-thumbnail.png"
 
 const PROJECTS = [
   {
@@ -12,7 +14,7 @@ const PROJECTS = [
     task: "사용자의 신체 정보를 기반으로 TDEE를 분석하고, AI가 개인 맞춤형 식단을 자동 생성하는 헬스케어 플랫폼을 개발해야 했습니다. 또한 사용자가 자신의 체형을 3D 아바타로 시각적으로 확인할 수 있는 기능과, 비동기 처리로 API 응답 속도를 개선하는 것이 필요했습니다.",
     action: "1. Spring @Async 비동기 처리: AI 식단 생성 API 호출을 비동기로 처리하여 API 타임아웃을 80% 단축했습니다. CompletableFuture를 활용해 외부 AI API와의 통신 지연을 최소화하고, 사용자 경험을 크게 개선했습니다.\\n2. JWT RTR(Refresh Token Rotation) 인증: Access Token과 Refresh Token을 모두 활용한 보안 시스템을 구축했습니다. Token 탈취 위험을 방지하기 위해 Refresh Token도 주기적으로 갱신하는 RTR 방식을 적용하여 보안성을 강화했습니다.\\n3. TDEE 기반 식단 추천 로직: 사용자의 나이, 성별, 체중, 신장, 활동량을 분석하여 Harris-Benedict 공식으로 기초대사량을 계산하고, 목표(다이어트/유지/증량)에 맞춘 칼로리와 영양소 비율을 산출하여 AI에게 전달했습니다.\\n4. BMI 연동 3D 아바타: Three.js를 활용하여 사용자의 BMI 수치에 따라 실시간으로 변화하는 3D 인체 모델을 구현했습니다. Vue.js와 연동하여 사용자가 입력한 신체 정보가 즉시 3D 아바타에 반영되도록 했습니다.",
     result: "Spring @Async 적용으로 AI 식단 생성 API의 평균 응답 시간을 5초에서 1초 이하로 단축(80% 개선)했습니다. JWT RTR 보안 강화로 토큰 탈취 위험을 최소화하고, TDEE 기반 과학적 식단 추천으로 사용자 만족도를 높였습니다. BMI 연동 3D 아바타 기능으로 시각적 피드백을 제공하여 사용자 참여도를 향상시켰습니다.",
-    image: "/projects/project1-thumbnail.png",
+    image: project1,
     githubLink: "https://github.com/ryubyeongsun/diet_coach_PJ",
     troubleshooting: {
       title: "AI 식단 생성 API 타임아웃 및 응답 지연 해결",
@@ -188,7 +190,7 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     task: "거래 중복 방지, 자동 판매 등록 배치, 거리순 검색 성능을 안정적으로 구현하는 것이 목표였습니다. 동시성 제어를 통해 데이터 정합성을 보장하고, 위치 기반 검색의 성능을 최적화하며, 스케줄링을 통한 자동화 시스템을 구축해야 했습니다.",
     action: "1. 비관적 락 기반 동시성 제어: 거래는 Payment 서버에서 처리되도록 설계하고, 판매글 조회 시 PESSIMISTIC_WRITE 비관적 락을 적용해 동시 구매 Race Condition을 차단했습니다.\\n2. 거래 프로세스 설계: 구매 가능 여부(판매 상태, 본인 상품, 포인트 잔액)를 검증한 뒤 포인트 차감/지급 및 판매 상태를 SOLD_OUT으로 변경하고, Manage 서버에 소유권 이전을 요청해 구매자 보관함으로 이동하도록 구현했습니다.\\n3. 배치 자동화: 매일 09:00에 Spring Scheduler 배치를 실행해 만료 판매글 삭제, 예약 판매 생성, PENDING → ON_SALE 전환을 자동화하여 운영 효율을 높였습니다.\\n4. Redis GEO 기반 위치 검색: Redis GEO + Pipeline으로 반경 검색 및 정렬을 캐시 계층에서 처리하여 위치 기반 조회 성능을 대폭 개선했습니다.",
     result: "비관적 락 적용으로 동시 구매 시 데이터 정합성을 100% 보장하고 중복 거래를 완전히 차단했습니다. Redis GEO를 활용한 위치 기반 검색으로 응답 속도를 개선하여 사용자 경험을 향상시켰으며, Spring Scheduler를 통한 배치 자동화로 수동 운영 부담을 제거했습니다.",
-    image: "/projects/project2-thumbnail.png",
+    image: project2,
     githubLink: "https://github.com/ryubyeongsun/cony-gifticon-platform",
     troubleshooting: {
       title: "동시 구매 중복 거래 방지 및 위치 검색 성능 최적화",

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CalendarDays, MapPin, GraduationCap, Mail, Github } from "lucide-react"
 import Image from "next/image"
+import profileImg from "@/public/profile.jpg"
 
 export default function AboutSection() {
   return (
@@ -16,10 +17,11 @@ export default function AboutSection() {
             <div className="relative aspect-square overflow-hidden rounded-2xl border-2 border-primary/20 shadow-2xl rotate-3 hover:rotate-0 transition-all duration-500">
               {/* Replace with your actual image path */}
               <Image
-                src="/profile.jpg"
+                src={profileImg}
                 alt="Profile"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-500"
+                placeholder="blur"
               />
             </div>
 

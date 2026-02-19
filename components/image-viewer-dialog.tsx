@@ -8,10 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import Image from "next/image"
+import Image, { StaticImageData } from "next/image"
 
 interface ImageViewerDialogProps {
-  src: string
+  src: string | StaticImageData
   alt: string
 }
 
@@ -29,11 +29,11 @@ export function ImageViewerDialog({ src, alt }: ImageViewerDialogProps) {
           <DialogDescription className="sr-only">Full size image of {alt}</DialogDescription>
         </DialogHeader>
         <div className="relative w-full h-[85vh] flex items-center justify-center pointer-events-none">
-           {/* Image container needs pointer-events-auto if we add controls later, but for now it's fine */}
-          <Image 
-            src={src} 
-            alt={alt} 
-            fill 
+          {/* Image container needs pointer-events-auto if we add controls later, but for now it's fine */}
+          <Image
+            src={src}
+            alt={alt}
+            fill
             className="object-contain"
             quality={100}
           />

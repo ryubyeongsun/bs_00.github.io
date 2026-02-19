@@ -14,7 +14,7 @@ import {
     Sparkles,
     Calendar,
 } from "lucide-react";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
 export const ProfileItem = () => {
@@ -127,7 +127,7 @@ export const ProjectItem = ({
     title: string;
     description: string;
     tags: string[];
-    image?: string;
+    image?: string | StaticImageData;
     href?: string;
     index: number;
 }) => {
