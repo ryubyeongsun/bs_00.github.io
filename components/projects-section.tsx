@@ -2,6 +2,7 @@ import ProjectCard from "./project-card"
 import { CodeBlock } from "./troubleshooting-dialog"
 import project1 from "@/public/projects/project1-thumbnail.png"
 import project2 from "@/public/projects/project2-thumbnail.png"
+import project3 from "@/public/projects/project3-thumbnail.png"
 
 const PROJECTS = [
   {
@@ -344,6 +345,126 @@ public void purchaseGifticon(Long saleId, Long userId) {
               </li>
               <li>
                 <strong>성능과 정합성의 균형:</strong> 비관적 락은 성능 저하를 유발할 수 있지만, 데이터 정합성이 최우선인 경우 필수적입니다.
+              </li>
+            </ul>
+          ),
+        },
+      ],
+    },
+  },
+  {
+    id: 3,
+    title: "덕치 (Duckchi) - 모임 기반 더치페이/정산 서비스",
+    period: "2026.03",
+    role: "Infrastructure Lead + Backend Developer (Auth)",
+    techStack: [
+      "Java 17",
+      "Spring Boot 3.5",
+      "Spring Security",
+      "JWT",
+      "Redis",
+      "Kafka",
+      "Docker Compose",
+      "Jenkins",
+      "Nginx",
+      "AWS EC2",
+      "RDS",
+      "Prometheus",
+      "Grafana",
+    ],
+    situation:
+      "Duckchi는 카카오 소셜 로그인으로 모임에 참여하고, 모임방 생성부터 결제 등록, 정산 요청/송금, 소비 리포트 확인까지 한 흐름으로 사용하는 모바일 더치페이 서비스입니다. 프로젝트 후반에는 단순히 기능 구현을 넘어 실제 운영 환경에서 안정적으로 배포되고 동작하는 구조가 필요했고, 인증 흐름과 외부 연동, 프록시, 메시징, 모니터링까지 여러 계층의 문제가 동시에 드러났습니다.",
+    task:
+      "인프라 담당으로서는 EC2 기반 운영 환경에 MSA 서비스를 안정적으로 배포할 수 있는 구조를 만들고, CI/CD와 모니터링 체계를 분리해 운영 리스크를 낮춰야 했습니다. 백엔드에서는 카카오 OAuth 로그인, JWT Access/Refresh Token 흐름, Redis 기반 토큰 관리 일부를 구현하고, 운영 환경에서 발생한 인증/리다이렉트/시간대 이슈를 로그 중심으로 빠르게 좁혀 해결하는 것이 핵심 과제였습니다.",
+    action:
+      "1. Docker Compose 기반 운영 환경 구성: EC2 위에 gateway-service, core-service, pay-service, insight-service, discovery-service를 컨테이너로 배포하고 Redis, Kafka를 함께 구성해 서비스 간 의존성을 정리했습니다.\\n2. Jenkins CI/CD 분리: develop과 release 브랜치 전략에 맞춰 CI와 CD 목적을 나누고, Docker 이미지 빌드, Docker Hub 푸시, EC2 재배포까지 자동화했습니다.\\n3. Nginx + HTTPS 운영 안정화: 리버스 프록시, TLS, App Link, 외부 Redirect URI 정합성을 맞췄고, 301 리다이렉트로 POST 요청이 GET으로 바뀌는 문제를 308과 경로별 프록시 설정으로 해결했습니다.\\n4. 인증 흐름 구현 및 안정화: 카카오 OAuth 로그인, JWT Access/Refresh Token 발급 및 재발급, Redis 기반 Refresh Token 관리와 로그아웃 흐름 일부를 구현하고 예외 케이스를 점검했습니다.\\n5. 운영 이슈 대응: Kafka 누락으로 insight-service가 기동 실패하던 문제, RDS 연결 이후 스키마 부재로 서비스가 죽는 문제, 금융 API 시간대(KST/UTC) 차이 문제를 로그와 설정 비교로 추적해 해결했습니다.\\n6. 모니터링 체계 구축: Spring Boot Actuator, Prometheus, Grafana를 연동해 애플리케이션/서버 메트릭을 시각화하고 배포 이후 상태를 빠르게 확인할 수 있도록 했습니다.",
+    result:
+      "배포 자동화와 모니터링 체계를 직접 구축하면서 기능 개발 이후의 운영 품질까지 책임지는 경험을 했습니다. 브랜치 전략에 맞춘 CI/CD 분리로 배포 안정성을 높였고, Nginx 리다이렉트, Kafka 운영 구성, App Link 검증, 금융 API 시간대 문제처럼 환경별 장애를 해결하며 서비스 기동 안정성을 개선했습니다. 또한 카카오 로그인과 JWT 인증 흐름을 운영 환경에 맞게 정리하면서 인증 예외와 외부 연동 문제를 구조적으로 다루는 경험을 쌓았습니다.",
+    image: project3,
+    troubleshooting: {
+      title: "Nginx 301 리다이렉트로 POST 요청이 GET으로 바뀌며 모임방 생성이 실패한 문제 해결",
+      date: "2026-03-28",
+      environment: "AWS EC2, Docker Compose, Nginx, Spring Cloud Gateway, HTTPS",
+      sections: [
+        {
+          title: "1. 문제 상황 (Symptoms)",
+          content: (
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <strong>현상:</strong> 앱에서 모임방 생성 API를 호출하면 클라이언트 기준으로는 정상 요청처럼 보였지만, 운영 환경에서만 `POST /api/...` 요청이 실패했습니다.
+              </li>
+              <li>
+                <strong>영향:</strong> 로컬과 개발 환경에서는 정상 동작했지만 HTTPS가 적용된 운영 환경에서 핵심 생성 기능이 막혀 실제 서비스 이용이 불가능했습니다.
+              </li>
+              <li>
+                <strong>초기 오해:</strong> 처음에는 Gateway 라우팅이나 Spring Controller 문제를 의심했지만, 애플리케이션 로그에는 아예 기대한 POST 요청이 남지 않았습니다.
+              </li>
+            </ul>
+          ),
+        },
+        {
+          title: "2. 원인 분석 (Root Cause Analysis)",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <strong>2.1 프록시 계층에서 메서드 변경 발생</strong>
+                <p className="mt-1">
+                  Nginx가 HTTP 요청을 HTTPS로 넘기기 위해 사용하던 <code>301</code> 리다이렉트가 문제였습니다. 일부 클라이언트 환경에서는 리다이렉트 이후 원래의 <code>POST</code> 메서드를 유지하지 않고 <code>GET</code> 으로 재요청했습니다.
+                </p>
+              </div>
+              <div>
+                <strong>2.2 애플리케이션보다 앞단 로그를 먼저 확인</strong>
+                <p className="mt-1">
+                  Spring 로그보다 Nginx access log와 redirect 동작을 먼저 확인하면서, 요청이 애플리케이션에 도달하기 전 프록시 계층에서 변형되고 있다는 점을 파악했습니다.
+                </p>
+                <CodeBlock label="문제 상황 요약">
+                  {`Client POST /api/v1/rooms
+-> Nginx 301 redirect to HTTPS
+-> Client replays request as GET
+-> Gateway/Backend expects POST, request mismatch 발생`}
+                </CodeBlock>
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "3. 해결 방법 (Resolution)",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <strong>3.1 301 대신 308 리다이렉트 적용</strong>
+                <p className="mt-1">
+                  메서드와 body를 유지하는 <code>308 Permanent Redirect</code> 로 변경해 클라이언트가 HTTPS 재요청 시에도 POST 요청을 그대로 유지하도록 수정했습니다.
+                </p>
+                <CodeBlock label="nginx.conf">
+                  {`server {
+    listen 80;
+    server_name duckchi.example.com;
+    return 308 https://$host$request_uri;
+}`}
+                </CodeBlock>
+              </div>
+              <div>
+                <strong>3.2 경로별 프록시 설정 점검</strong>
+                <p className="mt-1">
+                  API, SSE, 정적 리소스의 성격이 달라 동일 설정으로 처리하지 않고 경로별 프록시 정책을 분리했습니다. 이후 SSE 연결에는 버퍼링과 timeout 설정도 별도로 조정했습니다.
+                </p>
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "4. 결과와 배운 점 (Results & Lessons)",
+          content: (
+            <ul className="list-disc list-inside space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-md">
+              <li>
+                <strong>결과:</strong> 운영 환경에서 모임방 생성 POST 요청이 정상 전달되었고, HTTPS 전환 이후에도 API 메서드가 유지되었습니다.
+              </li>
+              <li>
+                <strong>운영 관점:</strong> 로컬에서는 재현되지 않는 문제일수록 애플리케이션 코드보다 프록시, 인증서, 리다이렉트 정책 같은 환경 차이를 먼저 봐야 한다는 점을 배웠습니다.
+              </li>
+              <li>
+                <strong>확장:</strong> 이후 App Link, SSE, 외부 Redirect URI 같은 프록시 의존 기능을 점검할 때도 동일하게 “요청이 어디서 변형되는가”를 기준으로 원인을 좁히는 습관을 만들었습니다.
               </li>
             </ul>
           ),

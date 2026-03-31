@@ -25,7 +25,8 @@ const SKILLS = {
     { name: "정보처리기사", date: "2025.06", link: "https://www.q-net.or.kr/" },
   ],
   awards: [
-    { name: "SSAFY 14기 최종 페어(관통) 프로젝트 우수상 - 아보핏(Diet Coach)", date: "2025.12" },
+    { name: "SSAFY 14기 최종 페어(관통) 프로젝트 우수상 - 아보핏 (Diet Coach)", date: "2025.12" },
+    { name: "SSAFY 14기 공통 프로젝트 우수상 - 코니 (CONY)", date: "2026.03" },
   ],
 }
 
@@ -39,7 +40,6 @@ export default function SkillsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Backend Technologies */}
           <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
               <div className="h-3 w-3 rounded-full bg-blue-500 mr-3 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
@@ -57,7 +57,6 @@ export default function SkillsSection() {
             </div>
           </Card>
 
-          {/* Infrastructure */}
           <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
               <div className="h-3 w-3 rounded-full bg-purple-500 mr-3 shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
@@ -75,7 +74,6 @@ export default function SkillsSection() {
             </div>
           </Card>
 
-          {/* Certifications */}
           <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
               <div className="h-3 w-3 rounded-full bg-amber-500 mr-3 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
@@ -104,7 +102,6 @@ export default function SkillsSection() {
             </div>
           </Card>
 
-          {/* Awards */}
           <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-400 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
               <div className="h-3 w-3 rounded-full bg-rose-500 mr-3 shadow-[0_0_10px_rgba(244,63,94,0.5)]" />
