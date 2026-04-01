@@ -36,6 +36,8 @@ export const TechIcon = ({ name, size = 24 }: { name: string; size?: number }) =
     "Crawling": Code2, // Scripting
     "API Integration": Server,
     "UML": DraftingCompass,
+    "Spring Cloud Gateway": Network,
+    "Eureka": Share2,
   };
 
   if (lucideMap[name]) {
@@ -48,9 +50,12 @@ export const TechIcon = ({ name, size = 24 }: { name: string; size?: number }) =
     "Spring Boot": "springboot",
     "Spring Security": "springsecurity",
     "Java": "openjdk",
+    "JWT": "jsonwebtokens",
+    "OAuth 2.0": "oauth",
     "MySQL": "mysql",
     "CouchDB": "apachecouchdb",
     "Docker": "docker",
+    "Docker Compose": "docker",
     "CI/CD": "githubactions", // Using GitHub Actions as representative
     "Node.js": "nodedotjs",
     "Vue.js": "vue.js",
@@ -61,6 +66,14 @@ export const TechIcon = ({ name, size = 24 }: { name: string; size?: number }) =
     "Go": "go",
     "ELK Stack": "elastic",
     "AWS": "amazonaws",
+    "AWS EC2": "amazonec2",
+    "AWS S3": "amazons3",
+    "RDS": "amazonrds",
+    "Jenkins": "jenkins",
+    "Nginx": "nginx",
+    "Kafka": "apachekafka",
+    "Prometheus": "prometheus",
+    "Grafana": "grafana",
     "Git": "git",
     "Redis": "redis",
     "Linux": "linux",

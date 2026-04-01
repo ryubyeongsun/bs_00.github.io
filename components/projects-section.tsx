@@ -13,7 +13,10 @@ const PROJECTS = [
     techStack: ["Java 17", "Spring Boot 3.5", "MyBatis", "MySQL", "Vue.js 3", "Three.js"],
     situation: "운동과 식단 관리를 병행하려는 사용자들이 자신의 체형을 정확히 파악하고 적절한 식단을 추천받기 어려운 문제가 있었습니다. 특히 TDEE(일일 총 에너지 소비량) 기반의 과학적인 식단 추천과 BMI 연동 3D 시각화를 제공하는 서비스가 부족했습니다.",
     task: "사용자의 신체 정보를 기반으로 TDEE를 분석하고, AI가 개인 맞춤형 식단을 자동 생성하는 헬스케어 플랫폼을 개발해야 했습니다. 또한 사용자가 자신의 체형을 3D 아바타로 시각적으로 확인할 수 있는 기능과, 비동기 처리로 API 응답 속도를 개선하는 것이 필요했습니다.",
-    action: "1. Spring @Async 비동기 처리: AI 식단 생성 API 호출을 비동기로 처리하여 API 타임아웃을 80% 단축했습니다. CompletableFuture를 활용해 외부 AI API와의 통신 지연을 최소화하고, 사용자 경험을 크게 개선했습니다.\\n2. JWT RTR(Refresh Token Rotation) 인증: Access Token과 Refresh Token을 모두 활용한 보안 시스템을 구축했습니다. Token 탈취 위험을 방지하기 위해 Refresh Token도 주기적으로 갱신하는 RTR 방식을 적용하여 보안성을 강화했습니다.\\n3. TDEE 기반 식단 추천 로직: 사용자의 나이, 성별, 체중, 신장, 활동량을 분석하여 Harris-Benedict 공식으로 기초대사량을 계산하고, 목표(다이어트/유지/증량)에 맞춘 칼로리와 영양소 비율을 산출하여 AI에게 전달했습니다.\\n4. BMI 연동 3D 아바타: Three.js를 활용하여 사용자의 BMI 수치에 따라 실시간으로 변화하는 3D 인체 모델을 구현했습니다. Vue.js와 연동하여 사용자가 입력한 신체 정보가 즉시 3D 아바타에 반영되도록 했습니다.",
+    action: `1. Spring @Async 비동기 처리: AI 식단 생성 API 호출을 비동기로 처리하여 API 타임아웃을 80% 단축했습니다. CompletableFuture를 활용해 외부 AI API와의 통신 지연을 최소화하고, 사용자 경험을 크게 개선했습니다.
+2. JWT RTR(Refresh Token Rotation) 인증: Access Token과 Refresh Token을 모두 활용한 보안 시스템을 구축했습니다. Token 탈취 위험을 방지하기 위해 Refresh Token도 주기적으로 갱신하는 RTR 방식을 적용하여 보안성을 강화했습니다.
+3. TDEE 기반 식단 추천 로직: 사용자의 나이, 성별, 체중, 신장, 활동량을 분석하여 Harris-Benedict 공식으로 기초대사량을 계산하고, 목표(다이어트/유지/증량)에 맞춘 칼로리와 영양소 비율을 산출하여 AI에게 전달했습니다.
+4. BMI 연동 3D 아바타: Three.js를 활용하여 사용자의 BMI 수치에 따라 실시간으로 변화하는 3D 인체 모델을 구현했습니다. Vue.js와 연동하여 사용자가 입력한 신체 정보가 즉시 3D 아바타에 반영되도록 했습니다.`,
     result: "Spring @Async 적용으로 AI 식단 생성 API의 평균 응답 시간을 5초에서 1초 이하로 단축(80% 개선)했습니다. JWT RTR 보안 강화로 토큰 탈취 위험을 최소화하고, TDEE 기반 과학적 식단 추천으로 사용자 만족도를 높였습니다. BMI 연동 3D 아바타 기능으로 시각적 피드백을 제공하여 사용자 참여도를 향상시켰습니다.",
     image: project1,
     githubLink: "https://github.com/ryubyeongsun/diet_coach_PJ",
@@ -189,7 +192,10 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     techStack: ["Java 17", "Spring Boot 3.5.9", "JPA", "Spring Security", "React Native", "TypeScript", "MySQL 8.0", "Redis", "Docker", "Jenkins", "AWS S3"],
     situation: "기프티콘을 모바일에서 등록·관리·거래하는 서비스로, 동시 구매 경쟁과 위치 기반 목록 조회, 예약 판매 자동화가 필요했습니다. 특히 인기 상품의 경우 여러 사용자가 동시에 구매를 시도하면서 중복 거래가 발생할 위험이 있었고, 사용자의 현재 위치에서 가까운 매장의 기프티콘을 빠르게 검색할 수 있어야 했습니다.",
     task: "거래 중복 방지, 자동 판매 등록 배치, 거리순 검색 성능을 안정적으로 구현하는 것이 목표였습니다. 동시성 제어를 통해 데이터 정합성을 보장하고, 위치 기반 검색의 성능을 최적화하며, 스케줄링을 통한 자동화 시스템을 구축해야 했습니다.",
-    action: "1. 비관적 락 기반 동시성 제어: 거래는 Payment 서버에서 처리되도록 설계하고, 판매글 조회 시 PESSIMISTIC_WRITE 비관적 락을 적용해 동시 구매 Race Condition을 차단했습니다.\\n2. 거래 프로세스 설계: 구매 가능 여부(판매 상태, 본인 상품, 포인트 잔액)를 검증한 뒤 포인트 차감/지급 및 판매 상태를 SOLD_OUT으로 변경하고, Manage 서버에 소유권 이전을 요청해 구매자 보관함으로 이동하도록 구현했습니다.\\n3. 배치 자동화: 매일 09:00에 Spring Scheduler 배치를 실행해 만료 판매글 삭제, 예약 판매 생성, PENDING → ON_SALE 전환을 자동화하여 운영 효율을 높였습니다.\\n4. Redis GEO 기반 위치 검색: Redis GEO + Pipeline으로 반경 검색 및 정렬을 캐시 계층에서 처리하여 위치 기반 조회 성능을 대폭 개선했습니다.",
+    action: `1. 비관적 락 기반 동시성 제어: 거래는 Payment 서버에서 처리되도록 설계하고, 판매글 조회 시 PESSIMISTIC_WRITE 비관적 락을 적용해 동시 구매 Race Condition을 차단했습니다.
+2. 거래 프로세스 설계: 구매 가능 여부(판매 상태, 본인 상품, 포인트 잔액)를 검증한 뒤 포인트 차감/지급 및 판매 상태를 SOLD_OUT으로 변경하고, Manage 서버에 소유권 이전을 요청해 구매자 보관함으로 이동하도록 구현했습니다.
+3. 배치 자동화: 매일 09:00에 Spring Scheduler 배치를 실행해 만료 판매글 삭제, 예약 판매 생성, PENDING → ON_SALE 전환을 자동화하여 운영 효율을 높였습니다.
+4. Redis GEO 기반 위치 검색: Redis GEO + Pipeline으로 반경 검색 및 정렬을 캐시 계층에서 처리하여 위치 기반 조회 성능을 대폭 개선했습니다.`,
     result: "비관적 락 적용으로 동시 구매 시 데이터 정합성을 100% 보장하고 중복 거래를 완전히 차단했습니다. Redis GEO를 활용한 위치 기반 검색으로 응답 속도를 개선하여 사용자 경험을 향상시켰으며, Spring Scheduler를 통한 배치 자동화로 수동 운영 부담을 제거했습니다.",
     image: project2,
     githubLink: "https://github.com/ryubyeongsun/cony-gifticon-platform",
@@ -376,8 +382,12 @@ public void purchaseGifticon(Long saleId, Long userId) {
       "Duckchi는 카카오 소셜 로그인으로 모임에 참여하고, 모임방 생성부터 결제 등록, 정산 요청/송금, 소비 리포트 확인까지 한 흐름으로 사용하는 모바일 더치페이 서비스입니다. 프로젝트 후반에는 단순히 기능 구현을 넘어 실제 운영 환경에서 안정적으로 배포되고 동작하는 구조가 필요했고, 인증 흐름과 외부 연동, 프록시, 메시징, 모니터링까지 여러 계층의 문제가 동시에 드러났습니다.",
     task:
       "인프라 담당으로서는 EC2 기반 운영 환경에 MSA 서비스를 안정적으로 배포할 수 있는 구조를 만들고, CI/CD와 모니터링 체계를 분리해 운영 리스크를 낮춰야 했습니다. 백엔드에서는 카카오 OAuth 로그인, JWT Access/Refresh Token 흐름, Redis 기반 토큰 관리 일부를 구현하고, 운영 환경에서 발생한 인증/리다이렉트/시간대 이슈를 로그 중심으로 빠르게 좁혀 해결하는 것이 핵심 과제였습니다.",
-    action:
-      "1. Docker Compose 기반 운영 환경 구성: EC2 위에 gateway-service, core-service, pay-service, insight-service, discovery-service를 컨테이너로 배포하고 Redis, Kafka를 함께 구성해 서비스 간 의존성을 정리했습니다.\\n2. Jenkins CI/CD 분리: develop과 release 브랜치 전략에 맞춰 CI와 CD 목적을 나누고, Docker 이미지 빌드, Docker Hub 푸시, EC2 재배포까지 자동화했습니다.\\n3. Nginx + HTTPS 운영 안정화: 리버스 프록시, TLS, App Link, 외부 Redirect URI 정합성을 맞췄고, 301 리다이렉트로 POST 요청이 GET으로 바뀌는 문제를 308과 경로별 프록시 설정으로 해결했습니다.\\n4. 인증 흐름 구현 및 안정화: 카카오 OAuth 로그인, JWT Access/Refresh Token 발급 및 재발급, Redis 기반 Refresh Token 관리와 로그아웃 흐름 일부를 구현하고 예외 케이스를 점검했습니다.\\n5. 운영 이슈 대응: Kafka 누락으로 insight-service가 기동 실패하던 문제, RDS 연결 이후 스키마 부재로 서비스가 죽는 문제, 금융 API 시간대(KST/UTC) 차이 문제를 로그와 설정 비교로 추적해 해결했습니다.\\n6. 모니터링 체계 구축: Spring Boot Actuator, Prometheus, Grafana를 연동해 애플리케이션/서버 메트릭을 시각화하고 배포 이후 상태를 빠르게 확인할 수 있도록 했습니다.",
+    action: `1. Docker Compose 기반 운영 환경 구성: EC2 위에 gateway-service, core-service, pay-service, insight-service, discovery-service를 컨테이너로 배포하고 Redis, Kafka를 함께 구성해 서비스 간 의존성을 정리했습니다.
+2. Jenkins CI/CD 분리: develop과 release 브랜치 전략에 맞춰 CI와 CD 목적을 나누고, Docker 이미지 빌드, Docker Hub 푸시, EC2 재배포까지 자동화했습니다.
+3. Nginx + HTTPS 운영 안정화: 리버스 프록시, TLS, App Link, 외부 Redirect URI 정합성을 맞췄고, 301 리다이렉트로 POST 요청이 GET으로 바뀌는 문제를 308과 경로별 프록시 설정으로 해결했습니다.
+4. 인증 흐름 구현 및 안정화: 카카오 OAuth 로그인, JWT Access/Refresh Token 발급 및 재발급, Redis 기반 Refresh Token 관리와 로그아웃 흐름 일부를 구현하고 예외 케이스를 점검했습니다.
+5. 운영 이슈 대응: Kafka 누락으로 insight-service가 기동 실패하던 문제, RDS 연결 이후 스키마 부재로 서비스가 죽는 문제, 금융 API 시간대(KST/UTC) 차이 문제를 로그와 설정 비교로 추적해 해결했습니다.
+6. 모니터링 체계 구축: Spring Boot Actuator, Prometheus, Grafana를 연동해 애플리케이션/서버 메트릭을 시각화하고 배포 이후 상태를 빠르게 확인할 수 있도록 했습니다.`,
     result:
       "배포 자동화와 모니터링 체계를 직접 구축하면서 기능 개발 이후의 운영 품질까지 책임지는 경험을 했습니다. 브랜치 전략에 맞춘 CI/CD 분리로 배포 안정성을 높였고, Nginx 리다이렉트, Kafka 운영 구성, App Link 검증, 금융 API 시간대 문제처럼 환경별 장애를 해결하며 서비스 기동 안정성을 개선했습니다. 또한 카카오 로그인과 JWT 인증 흐름을 운영 환경에 맞게 정리하면서 인증 예외와 외부 연동 문제를 구조적으로 다루는 경험을 쌓았습니다.",
     image: project3,
