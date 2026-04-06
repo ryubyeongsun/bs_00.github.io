@@ -13,7 +13,8 @@ import {
   Server,
   Code2,
   Layers,
-  Cpu
+  Cpu,
+  Cloud
 } from "lucide-react";
 
 // Fallback for icons not found in devicons-react or specific requests
@@ -25,7 +26,7 @@ export const TechIcon = ({ name, size = 24 }: { name: string; size?: number }) =
   const lucideMap: { [key: string]: React.ElementType } = {
     "RESTful API": Globe,
     "Transaction Management": ArrowRightLeft,
-    "Hyperledger Fabric": Blocks, // Blockchain blocks
+    "Hyperledger Fabric": Blocks,
     "System Architecture": Network,
     "Distributed Systems": Share2,
     "Microservices": Puzzle,
@@ -33,11 +34,13 @@ export const TechIcon = ({ name, size = 24 }: { name: string; size?: number }) =
     "Query Optimization": Zap,
     "Database Design": Database,
     "Indexing Strategies": Layers,
-    "Crawling": Code2, // Scripting
+    "Crawling": Code2,
     "API Integration": Server,
     "UML": DraftingCompass,
     "Spring Cloud Gateway": Network,
     "Eureka": Share2,
+    "MyBatis": Database,
+    "AWS": Cloud,
   };
 
   if (lucideMap[name]) {
@@ -56,16 +59,15 @@ export const TechIcon = ({ name, size = 24 }: { name: string; size?: number }) =
     "CouchDB": "apachecouchdb",
     "Docker": "docker",
     "Docker Compose": "docker",
-    "CI/CD": "githubactions", // Using GitHub Actions as representative
+    "CI/CD": "githubactions",
     "Node.js": "nodedotjs",
     "Vue.js": "vue.js",
     "React": "react",
     "Next.js": "nextdotjs",
     "TypeScript": "typescript",
-    "JPA": "hibernate", // Hibernate is the default JPA provider
+    "JPA": "hibernate",
     "Go": "go",
     "ELK Stack": "elastic",
-    "AWS": "amazonaws",
     "AWS EC2": "amazonec2",
     "AWS S3": "amazons3",
     "RDS": "amazonrds",
@@ -98,11 +100,7 @@ export const TechIcon = ({ name, size = 24 }: { name: string; size?: number }) =
       height={size}
       className="dark:invert dark:opacity-80 opacity-70"
       onError={(e) => {
-        // Fallback to a generic CPU icon if branding icon not found
         e.currentTarget.style.display = 'none';
-        // We can render a fallback component here, but since it's an img tag, 
-        // we'll handle fallback via parent or just hide it.
-        // For better UX, let's just leave it hidden or show a generic block in the future.
       }}
     />
   );
