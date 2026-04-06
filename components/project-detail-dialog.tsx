@@ -17,6 +17,7 @@ import { TroubleshootingDialog, TroubleshootingLog } from "./troubleshooting-dia
 export interface Project {
   id: number
   title: string
+  description: string
   period: string
   role: string
   techStack: string[]

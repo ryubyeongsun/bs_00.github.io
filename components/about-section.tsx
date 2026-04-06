@@ -8,13 +8,13 @@ import profileImg from "@/public/profile.jpg"
 
 export default function AboutSection() {
   return (
-    <section id="about" className="py-24 px-4 bg-background">
+    <section id="about" className="py-24 px-4 bg-background dot-pattern">
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
 
           {/* Left Column: Profile Image & Quick Info */}
           <div className="md:col-span-5 lg:col-span-4 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 view-trigger">
-            <div className="relative aspect-square overflow-hidden rounded-2xl border-2 border-primary/20 shadow-2xl rotate-3 hover:rotate-0 transition-all duration-500">
+            <div className="relative aspect-square overflow-hidden rounded-2xl border-2 border-emerald-500/20 shadow-2xl shadow-emerald-500/10 rotate-3 hover:rotate-0 transition-all duration-500">
               {/* Replace with your actual image path */}
               <Image
                 src={profileImg}
@@ -25,7 +25,7 @@ export default function AboutSection() {
               />
             </div>
 
-            <Card className="p-6 bg-card border-slate-200 dark:border-slate-800">
+            <Card className="p-6 glass border-slate-200 dark:border-emerald-900/30 card-glow rounded-2xl">
               <h3 className="text-2xl font-bold mb-1 text-center">류병선</h3>
               <p className="text-primary text-center font-medium mb-6">Backend Engineer</p>
 

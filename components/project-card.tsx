@@ -9,7 +9,7 @@ import { ProjectDetailDialog, Project } from "./project-detail-dialog"
 export default function ProjectCard({ project }: { project: Project }) {
   return (
     <ProjectDetailDialog project={project}>
-      <Card className="group cursor-pointer overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-lg flex flex-col h-full bg-card">
+      <Card className="group cursor-pointer overflow-hidden hover:border-emerald-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/5 flex flex-col h-full glass dark:border-emerald-900/20 rounded-2xl">
         {/* Project Thumbnail */}
         {project.image && (
           <div className="relative w-full h-48 overflow-hidden border-b border-border bg-slate-50 dark:bg-slate-900">
@@ -34,13 +34,16 @@ export default function ProjectCard({ project }: { project: Project }) {
             <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
               {project.title}
             </h3>
-            <div className="flex items-center flex-wrap gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center flex-wrap gap-2 text-sm text-muted-foreground mb-3">
               <Badge variant="outline" className="whitespace-nowrap">
                 {project.role}
               </Badge>
               <span className="text-xs">•</span>
               <span className="text-xs">{project.period}</span>
             </div>
+            <p className="text-[13px] text-muted-foreground/80 leading-relaxed line-clamp-2 border-l-2 border-emerald-500/30 pl-3">
+              {project.description}
+            </p>
           </div>
 
           {/* Tech Stack - Limit to first 5 or show all if short */}

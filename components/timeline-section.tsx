@@ -30,14 +30,14 @@ const TIMELINE_ITEMS = [
 const TYPE_CONFIG = {
   project: {
     icon: Rocket,
-    color: "bg-blue-500",
-    badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
+    color: "bg-emerald-500",
+    badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
     label: "Project",
   },
   education: {
     icon: GraduationCap,
-    color: "bg-emerald-500",
-    badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
+    color: "bg-teal-500",
+    badgeColor: "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300",
     label: "Education",
   },
   certification: {
@@ -56,7 +56,7 @@ const TYPE_CONFIG = {
 
 export default function TimelineSection() {
   return (
-    <section id="timeline" className="py-24 px-4 bg-background">
+    <section id="timeline" className="py-24 px-4 bg-background dot-pattern">
       <div className="max-w-3xl mx-auto">
         <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 view-trigger">
           <h2 className="text-4xl font-bold mb-3 text-foreground">타임라인</h2>

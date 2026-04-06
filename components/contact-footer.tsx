@@ -9,7 +9,7 @@ export default function ContactFooter() {
           {/* About */}
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 view-trigger">
             <h3 className="text-xl font-bold mb-6 text-white flex items-center gap-2">
-              <div className="h-8 w-8 rounded bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-xs font-bold">P</div>
+              <div className="h-8 w-8 rounded bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xs font-bold">P</div>
               About
             </h3>
             <p className="text-slate-400 text-sm leading-7 max-w-xs">
@@ -88,7 +88,7 @@ export default function ContactFooter() {
                 </a>
               </Button>
             </div>
-            <p className="text-slate-500 text-sm">© 2025 Park Hyeong Ju. All rights reserved.</p>
+            <p className="text-slate-500 text-sm">© 2026 Ryu Byeongsun. All rights reserved.</p>
           </div>
         </div>
       </div>

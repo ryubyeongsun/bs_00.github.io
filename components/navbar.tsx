@@ -9,7 +9,6 @@ const NAV_ITEMS = [
     { label: "About", href: "#about" },
     { label: "Skills", href: "#skills" },
     { label: "Projects", href: "#projects" },
-    { label: "Timeline", href: "#timeline" },
 ]
 
 export default function Navbar() {
@@ -52,7 +51,7 @@ export default function Navbar() {
                         : "text-white"
                         }`}
                 >
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">
                         RBS
                     </span>
                 </button>

@@ -8,6 +8,7 @@ const PROJECTS = [
   {
     id: 1,
     title: "Diet Coach (아보핏) - AI 기반 헬스케어 서비스",
+    description: "TDEE 기반 AI 맞춤 식단 자동 생성 및 BMI 연동 3D 체형 시각화 헬스케어 플랫폼",
     period: "2025.11 ~ 2025.12",
     role: "Backend Developer",
     techStack: ["Java 17", "Spring Boot 3.5", "MyBatis", "MySQL", "Vue.js 3", "Three.js"],
@@ -187,6 +188,7 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
   {
     id: 2,
     title: "CONY - 기프티콘 관리 및 판매 서비스",
+    description: "AI(OCR) 기프티콘 자동 등록, 위치 기반 스마트 알림, 유효기간 임박 자동 판매, 공유방 기능을 제공하는 기프티콘 관리·거래 앱",
     period: "2026.01 ~ 2026.02",
     role: "Backend Developer (거래 도메인 담당)",
     techStack: ["Java 17", "Spring Boot 3.5.9", "JPA", "Spring Security", "React Native", "TypeScript", "MySQL 8.0", "Redis", "Docker", "Jenkins", "AWS S3"],
@@ -361,7 +363,8 @@ public void purchaseGifticon(Long saleId, Long userId) {
   {
     id: 3,
     title: "덕치 (Duckchi) - 모임 기반 더치페이/정산 서비스",
-    period: "2026.03",
+    description: "모임방 생성부터 결제 등록, 정산 요청/송금, 소비 리포트까지 한 흐름으로 사용하는 모바일 더치페이 서비스",
+    period: "2026.02 ~ 2026.03",
     role: "Infrastructure Lead + Backend Developer (Auth)",
     techStack: [
       "Java 17",
@@ -486,7 +489,7 @@ public void purchaseGifticon(Long saleId, Long userId) {
 
 export default function ProjectsSection() {
   return (
-    <section id="projects" className="py-24 px-4 bg-slate-50 dark:bg-slate-950">
+    <section id="projects" className="py-24 px-4 bg-gradient-to-b from-background via-emerald-50/20 to-background dark:via-emerald-950/10 dot-pattern">
       <div className="max-w-5xl mx-auto">
         <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 view-trigger">
           <h2 className="text-4xl font-bold mb-3 text-foreground">주요 프로젝트</h2>

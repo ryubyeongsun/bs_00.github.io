@@ -35,7 +35,7 @@ const SKILLS = {
 
 export default function SkillsSection() {
   return (
-    <section id="skills" className="py-24 px-4 bg-slate-50 dark:bg-slate-900/50">
+    <section id="skills" className="relative py-24 px-4 bg-gradient-to-b from-background via-emerald-50/30 to-background dark:via-emerald-950/20">
       <div className="max-w-5xl mx-auto">
         <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 view-trigger">
           <h2 className="text-4xl font-bold mb-3 text-foreground">기술 스택 & 역량</h2>
@@ -43,14 +43,14 @@ export default function SkillsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 fill-mode-both view-trigger">
+          <Card className="p-8 glass border-slate-200 dark:border-emerald-900/20 card-glow rounded-2xl hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
-              <div className="h-3 w-3 rounded-full bg-blue-500 mr-3 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+              <div className="h-3 w-3 rounded-full bg-emerald-500 mr-3 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
               Backend
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {SKILLS.backend.map((skill) => (
-                <div key={skill} className="flex flex-col items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-500/50 transition-colors group">
+                <div key={skill} className="flex flex-col items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-emerald-500/50 transition-colors group">
                   <div className="h-10 w-10 flex items-center justify-center bg-white dark:bg-slate-800 rounded-full shadow-sm group-hover:scale-110 transition-transform">
                     <TechIcon name={skill} size={24} />
                   </div>
@@ -60,14 +60,14 @@ export default function SkillsSection() {
             </div>
           </Card>
 
-          <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both view-trigger">
+          <Card className="p-8 glass border-slate-200 dark:border-emerald-900/20 card-glow rounded-2xl hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
-              <div className="h-3 w-3 rounded-full bg-purple-500 mr-3 shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
+              <div className="h-3 w-3 rounded-full bg-teal-500 mr-3 shadow-[0_0_10px_rgba(20,184,166,0.5)]" />
               Infrastructure
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {SKILLS.infrastructure.map((skill) => (
-                <div key={skill} className="flex flex-col items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-purple-500/50 transition-colors group">
+                <div key={skill} className="flex flex-col items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-teal-500/50 transition-colors group">
                   <div className="h-10 w-10 flex items-center justify-center bg-white dark:bg-slate-800 rounded-full shadow-sm group-hover:scale-110 transition-transform">
                     <TechIcon name={skill} size={24} />
                   </div>
@@ -77,7 +77,7 @@ export default function SkillsSection() {
             </div>
           </Card>
 
-          <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both view-trigger">
+          <Card className="p-8 glass border-slate-200 dark:border-emerald-900/20 card-glow rounded-2xl hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
               <div className="h-3 w-3 rounded-full bg-amber-500 mr-3 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
               Certifications
@@ -105,7 +105,7 @@ export default function SkillsSection() {
             </div>
           </Card>
 
-          <Card className="p-8 bg-card border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-400 fill-mode-both view-trigger">
+          <Card className="p-8 glass border-slate-200 dark:border-emerald-900/20 card-glow rounded-2xl hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-400 fill-mode-both view-trigger">
             <h3 className="text-xl font-bold mb-6 text-foreground flex items-center">
               <div className="h-3 w-3 rounded-full bg-rose-500 mr-3 shadow-[0_0_10px_rgba(244,63,94,0.5)]" />
               Awards
