@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>류병선 - Backend Engineer Resume</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #1a1a1a;
+      background: #f0f0f0;
+      line-height: 1.6;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      background: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media print {
+      body { background: white; }
+      .page { margin: 0; box-shadow: none; }
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #064e3b, #065f46, #047857);
+      color: white;
+      padding: 28px 36px 24px;
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #34d399, #2dd4bf, #22d3ee);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .header .subtitle {
+      font-size: 14px;
+      color: #a7f3d0;
+      margin-top: 2px;
+      font-weight: 400;
+    }
+    .header .tagline {
+      font-size: 12px;
+      color: #d1fae5;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 11px;
+      color: #d1fae5;
+    }
+    .contact-info a {
+      color: #a7f3d0;
+      text-decoration: none;
+    }
+
+    /* Content */
+    .content {
+      padding: 20px 36px 24px;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 18px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #047857;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-bottom: 2px solid #d1fae5;
+      padding-bottom: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(to bottom, #10b981, #14b8a6);
+      border-radius: 2px;
+    }
+
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 6px 12px;
+      font-size: 12px;
+    }
+    .skill-label {
+      font-weight: 600;
+      color: #065f46;
+    }
+    .skill-value {
+      color: #374151;
+    }
+
+    /* Project */
+    .project {
+      margin-bottom: 14px;
+      padding-left: 10px;
+      border-left: 2px solid #a7f3d0;
+    }
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 2px;
+    }
+    .project-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .project-meta {
+      font-size: 10.5px;
+      color: #6b7280;
+    }
+    .project-desc {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      font-style: italic;
+    }
+    .project-role {
+      font-size: 11px;
+      color: #047857;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .project-detail {
+      font-size: 11px;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .project-detail li {
+      margin-bottom: 2px;
+      list-style: none;
+      padding-left: 12px;
+      position: relative;
+    }
+    .project-detail li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-size: 10px;
+    }
+    .project-result {
+      font-size: 10.5px;
+      color: #065f46;
+      background: #ecfdf5;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    /* Tags */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    .tag {
+      font-size: 9.5px;
+      padding: 1px 6px;
+      background: #f0fdf4;
+      color: #065f46;
+      border: 1px solid #bbf7d0;
+      border-radius: 3px;
+    }
+
+    /* Education */
+    .edu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .edu-name {
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    .edu-detail {
+      font-size: 11px;
+      color: #6b7280;
+    }
+    .edu-date {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    /* Certifications */
+    .cert-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 24px;
+      font-size: 11.5px;
+    }
+    .cert-item {
+      display: flex;
+      justify-content: space-between;
+    }
+    .cert-name { color: #374151; }
+    .cert-date { color: #9ca3af; font-size: 10.5px; }
+
+    /* Footer */
+    .footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 9px;
+      color: #9ca3af;
+      padding: 8px;
+      border-top: 1px solid #f3f4f6;
+    }
+    .footer a {
+      color: #10b981;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <h1>류병선</h1>
+          <div class="subtitle">Backend Engineer</div>
+          <div class="tagline">
+            신뢰할 수 있는 백엔드 시스템을 설계하는 개발자입니다.<br>
+            데이터 무결성과 시스템 안정성을 최우선으로 고려합니다.
+          </div>
+        </div>
+        <div class="contact-info">
+          <span>📧 <a href="mailto:abcfg89@naver.com">abcfg89@naver.com</a></span>
+          <span>💻 <a href="https://github.com/ryubyeongsun">github.com/ryubyeongsun</a></span>
+          <span>🌐 <a href="https://bs-00.github.io">bs-00.github.io</a></span>
+          <span>📍 Gwangju, South Korea</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Skills -->
+      <div class="section">
+        <div class="section-title">기술 스택</div>
+        <div class="skills-grid">
+          <span class="skill-label">Backend</span>
+          <span class="skill-value">Java, Spring Boot, Spring Security, Spring Cloud Gateway, MyBatis, JPA, MySQL, Redis, Kafka</span>
+          <span class="skill-label">Infra</span>
+          <span class="skill-value">Docker, AWS, Nginx, Prometheus, Grafana, CI/CD</span>
+          <span class="skill-label">자격증</span>
+          <span class="skill-value">정보처리기사 (2025.06) · SQLD (2024.04) · 한국사능력검정시험 1급 (2022.02)</span>
+        </div>
+      </div>
+
+      <!-- Projects -->
+      <div class="section">
+        <div class="section-title">프로젝트</div>
+
+        <!-- Project 1 -->
+        <div class="project">
+          <div class="project-header">
+            <span class="project-title">Diet Coach (아보핏) - AI 기반 헬스케어 서비스</span>
+            <span class="project-meta">2025.11 ~ 2025.12</span>
+          </div>
+          <div class="project-desc">TDEE 기반 AI 맞춤 식단 자동 생성 및 BMI 연동 3D 체형 시각화 헬스케어 플랫폼</div>
+          <div class="project-role">Backend Developer</div>
+          <div class="tags">
+            <span class="tag">Java</span>
+            <span class="tag">Spring Boot</span>
+            <span class="tag">MyBatis</span>
+            <span class="tag">MySQL</span>
+            <span class="tag">Vue.js</span>
+          </div>
+          <ul class="project-detail">
+            <li>Spring @Async 비동기 처리로 AI 식단 생성 API 응답 시간 80% 단축 (5초 → 1초 이하)</li>
+            <li>JWT RTR(Refresh Token Rotation) 인증 시스템 구축으로 토큰 탈취 위험 최소화</li>
+            <li>Harris-Benedict 공식 기반 TDEE 분석 → 목표별(다이어트/유지/증량) 맞춤 영양소 비율 산출</li>
+          </ul>
+          <div class="project-result">
+            🏆 SSAFY 14기 최종 프로젝트 우수상 수상 · API 타임아웃 에러율 100% → 0%
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project">
+          <div class="project-header">
+            <span class="project-title">CONY - 기프티콘 관리 및 판매 서비스</span>
+            <span class="project-meta">2026.01 ~ 2026.02</span>
+          </div>
+          <div class="project-desc">AI(OCR) 자동 등록, 위치 기반 스마트 알림, 유효기간 임박 자동 판매를 제공하는 기프티콘 관리·거래 앱</div>
+          <div class="project-role">Backend Developer (거래 도메인 담당)</div>
+          <div class="tags">
+            <span class="tag">Java</span>
+            <span class="tag">Spring Boot</span>
+            <span class="tag">JPA</span>
+            <span class="tag">Spring Security</span>
+            <span class="tag">MySQL</span>
+            <span class="tag">Redis</span>
+            <span class="tag">Docker</span>
+          </div>
+          <ul class="project-detail">
+            <li>PESSIMISTIC_WRITE 비관적 락 적용으로 동시 구매 Race Condition 차단, 데이터 정합성 100% 보장</li>
+            <li>Redis GEO + Pipeline으로 반경 검색 및 거리순 정렬을 캐시 계층에서 처리하여 위치 검색 성능 개선</li>
+            <li>Spring Scheduler 배치로 만료 삭제/예약 판매 생성/상태 전환 자동화</li>
+          </ul>
+          <div class="project-result">
+            🏆 SSAFY 14기 공통 프로젝트 우수상 수상 · 동시 구매 중복 거래 완전 차단
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project">
+          <div class="project-header">
+            <span class="project-title">덕치 (Duckchi) - 모임 기반 더치페이/정산 서비스</span>
+            <span class="project-meta">2026.02 ~ 2026.03</span>
+          </div>
+          <div class="project-desc">모임방 생성부터 결제 등록, 정산 요청/송금, 소비 리포트까지 한 흐름으로 사용하는 모바일 더치페이 서비스</div>
+          <div class="project-role">Infrastructure Lead + Backend Developer (Auth)</div>
+          <div class="tags">
+            <span class="tag">Java</span>
+            <span class="tag">Spring Boot</span>
+            <span class="tag">Redis</span>
+            <span class="tag">Kafka</span>
+            <span class="tag">Docker</span>
+            <span class="tag">Jenkins</span>
+            <span class="tag">Nginx</span>
+            <span class="tag">AWS</span>
+          </div>
+          <ul class="project-detail">
+            <li>Docker Compose 기반 MSA 서비스(Gateway/Core/Pay/Insight) 컨테이너 배포 환경 구성</li>
+            <li>Jenkins CI/CD 분리(develop/release) 및 Docker 이미지 빌드 → EC2 자동 재배포 파이프라인 구축</li>
+            <li>Nginx 301→308 리다이렉트 변경으로 HTTPS 전환 시 POST 메서드 유실 문제 해결</li>
+            <li>Prometheus + Grafana 연동 모니터링 체계 구축으로 배포 후 상태 실시간 확인</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="section">
+        <div class="section-title">학력</div>
+        <div class="edu-item">
+          <div>
+            <span class="edu-name">Samsung SW Academy For Youth (SSAFY)</span>
+            <span class="edu-detail"> · 14기 Java 전공</span>
+          </div>
+          <span class="edu-date">2025.07 ~ 진행 중</span>
+        </div>
+        <div class="edu-item">
+          <div>
+            <span class="edu-name">조선대학교</span>
+            <span class="edu-detail"> · 컴퓨터공학과</span>
+          </div>
+          <span class="edu-date">2019.03 ~ 2025.08 졸업</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      더 자세한 프로젝트 정보와 트러블슈팅은 포트폴리오 사이트에서 확인하실 수 있습니다 → <a href="https://bs-00.github.io">bs-00.github.io</a>
+    </div>
+  </div>
+</body>
+</html>

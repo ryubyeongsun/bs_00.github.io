@@ -1,0 +1,9 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+.env
+.DS_Store
+S14P21C102/
+tsconfig.tsbuildinfo

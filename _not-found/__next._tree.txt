@@ -1,0 +1,3 @@
+:HL["/bs_00.github.io/_next/static/chunks/9857ba86ce4e82d8.css","style"]
+:HL["/bs_00.github.io/_next/static/chunks/07ce1fc71246661e.css","style"]
+0:{"buildId":"K5IdMcoBPk5nBJ2veGXcg","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"/_not-found","paramType":null,"paramKey":"/_not-found","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
