@@ -224,7 +224,7 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                 </h3>
                 <div className="bg-muted/50 rounded-xl p-4 border flex justify-center">
                   <img
-                    src={project.architectureImage}
+                    src={typeof project.architectureImage === "string" ? project.architectureImage : project.architectureImage.src}
                     alt={`${project.title} Architecture`}
                     className="max-w-full rounded-lg shadow-sm"
                   />

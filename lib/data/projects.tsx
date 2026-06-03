@@ -2,6 +2,9 @@ import { CodeBlock } from "@/components/troubleshooting-dialog"
 import project1 from "@/public/projects/project1-thumbnail.png"
 import project2 from "@/public/projects/project2-thumbnail.png"
 import project3 from "@/public/projects/project3-thumbnail.png"
+import project1Arch from "@/public/projects/project1-architecture.png"
+import project2Arch from "@/public/projects/project2-architecture.png"
+import project3Arch from "@/public/projects/project3-architecture.png"
 
 export const PROJECTS = [
   {
@@ -54,7 +57,7 @@ export const PROJECTS = [
         "단순히 외부 API를 연동하는 것을 넘어, 실패·타임아웃·사용자 대기 상태까지 고려한 전체 흐름(Flow) 설계가 훨씬 중요하다는 것을 깨달았습니다. 기술적인 성능 개선만큼이나 예외 상황에서의 안정성과 UX 방어가 필수적이라는 점을 배웠습니다.",
     },
     image: project1,
-    architectureImage: "/projects/project1-architecture.png",
+    architectureImage: project1Arch,
     githubLink: "https://github.com/ryubyeongsun/diet_coach_PJ",
     troubleshooting: {
       title: "AI 식단 파이프라인 지연 및 커머스 연동 정합성 문제 해결",
@@ -213,7 +216,7 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
         "결제 도메인에서는 빠른 응답보다 정확하고 안전한 데이터 처리가 최우선 설계 원칙임을 체감했습니다. 비관적 락은 성능 저하를 유발할 수 있지만, 돈이 오가는 시스템에서 \"단 한 건의 중복 결제도 없어야 한다\"는 요구사항에는 가장 확실한 선택이었습니다.",
     },
     image: project2,
-    architectureImage: "/projects/project2-architecture.png",
+    architectureImage: project2Arch,
     githubLink: "https://github.com/ryubyeongsun/cony-gifticon-platform",
     troubleshooting: {
       title: "동시 구매 중복 거래 방지 및 위치 검색 성능 최적화",
@@ -372,7 +375,7 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
         "\"로컬에서 되는데 운영에서 안 된다\"는 문제는 대부분 애플리케이션 코드가 아니라 프록시, 인증서, 리다이렉트 정책 같은 인프라 환경 차이에서 발생한다는 것을 체감했습니다. \"요청이 어디서 변형되는가\"를 기준으로 원인을 좁히는 디버깅 습관을 만들었습니다.",
     },
     image: project3,
-    architectureImage: "/projects/project3-architecture.png",
+    architectureImage: project3Arch,
     troubleshooting: {
       title:
         "Nginx 301 리다이렉트로 POST 요청이 GET으로 바뀌며 모임방 생성이 실패한 문제 해결",
