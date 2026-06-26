@@ -33,8 +33,24 @@ export const PROJECTS = [
       ],
     },
     teamComposition: [
-      { role: "프론트엔드", count: 1, isMe: false, tasks: "Vue.js 모바일 UI/UX, Three.js 3D 체형 시각화" },
-      { role: "백엔드 (본인)", count: 1, isMe: true, tasks: "AI 식단 생성 API, 장보기 연동, 예산 필터링, 인프라 구축" }
+      { role: "풀스택", count: 1, isMe: false, tasks: "Vue.js 모바일 UI/UX, Three.js 3D 체형 시각화" },
+      { role: "풀스택 (백엔드 전담)", count: 1, isMe: true, tasks: "AI 식단 생성 API, 장보기 연동, 예산 필터링, 비동기 파이프라인" }
+    ],
+    problemSolving: [
+      {
+        title: "예산 오차 및 엉뚱한 상품 매핑 정확도 한계 극복",
+        problem: "AI 생성 식단의 재료비가 예산을 크게 초과하고, 단순 키워드 검색 시 묶음/대용량 등 엉뚱한 상품이 매핑되는 문제 발생",
+        cause: "API가 시장 단가를 몰라 예산 제어가 불가했고, 11번가 검색 시 수량/단위 텍스트가 혼재되어 매핑 노이즈 발생",
+        solution: "Greedy 알고리즘 기반 예산 초과분 내림차순 필터링 적용 및 IngredientQueryNormalizer로 검색어 정규화(수량/단위 제거)",
+        result: "사용자 예산 ±15% 이내로 재료비 제어 성공 및 엉뚱한 상품 노출 방지로 장보기 리스트 품질 대폭 향상"
+      },
+      {
+        title: "AI API의 8~10초 응답 지연으로 인한 타임아웃 해결",
+        problem: "외부 AI API가 식단 생성에 8~10초 소요되어, 브라우저 타임아웃 및 서비스 이탈 발생",
+        cause: "식단 생성 요청이 동기적으로 처리되어 스레드가 블로킹되고 클라이언트가 대기 상태에 빠짐",
+        solution: "@Async + CompletableFuture 기반 비동기 파이프라인 전환 및 프론트엔드 폴링(1초 간격) 구조 적용",
+        result: "응답 시간 80% 개선(즉시 응답 반환) 및 타임아웃 에러율 0% 달성으로 사용자 경험 보장"
+      }
     ],
     situation:
       "운동과 식단 관리를 병행하려는 사용자들이 과학적 근거(TDEE)에 기반한 맞춤 식단을 추천받기 어려운 문제가 있었습니다. 기존 식단 앱은 단순 칼로리 계산에 그쳐, 개인별 대사량을 반영한 영양소 최적화와 체형 변화의 시각적 피드백이 부족했습니다.",
@@ -206,6 +222,15 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
       { role: "인프라", count: 1, isMe: false, tasks: "CI/CD 배포 파이프라인, AWS EC2 구성" },
       { role: "AI", count: 1, isMe: false, tasks: "OCR 이미지 텍스트 추출 자동화 모델" }
     ],
+    problemSolving: [
+      {
+        title: "MySQL Haversine 위치 검색 성능 한계 및 DB 부하 극복",
+        problem: "MySQL에서 Haversine 공식으로 사용자 주변 매장 검색 시 O(N) 풀스캔이 발생하여 응답 속도 저하",
+        cause: "매 요청마다 삼각함수 연산을 수행하고 인덱스 활용이 불가하여 매장 수 증가 시 DB 부하 급증",
+        solution: "위치 데이터를 Redis GEO 인메모리 캐시 계층으로 분리하고, Pipeline을 활용해 브랜드명 일괄 조회 적용",
+        result: "반경 내 매장만 조회하여 거리 연산 부하를 제거하고 검색 속도 및 확장성 대폭 개선"
+      }
+    ],
     situation:
       "기프티콘 유효기간 만료로 인한 낙전 금액이 연간 수백억 원에 달합니다. 기존 서비스는 수동 등록이 번거롭고, 사용 가능한 매장을 찾기 어려우며, 유효기간 관리가 되지 않아 사용률이 낮았습니다. 특히 인기 상품에 여러 사용자가 동시에 구매를 시도하면 중복 거래가 발생할 위험이 있었습니다.",
     task: "거래 중복 방지를 위한 동시성 제어, 자동 판매 등록 배치, 거리순 검색 성능을 안정적으로 구현하는 것이 목표였습니다. 동시성 제어를 통해 데이터 정합성을 보장하고, 위치 기반 검색의 성능을 최적화하며, 스케줄링을 통한 운영 자동화 시스템을 구축해야 했습니다.",
@@ -366,8 +391,17 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     },
     teamComposition: [
       { role: "프론트엔드", count: 1, isMe: false, tasks: "React Native 클라이언트 화면 구성 및 상태 관리" },
-      { role: "백엔드 (풀스택)", count: 4, isMe: false, tasks: "모임 정산, 결제 내역 등록, 소비 리포트 로직 개발" },
+      { role: "풀스택", count: 4, isMe: false, tasks: "모임 정산, 결제 내역 등록, 소비 리포트 로직 개발" },
       { role: "인프라 / 백엔드 (본인)", count: 1, isMe: true, tasks: "MSA 인프라 전체 구성, Gateway 인증 통합, CI/CD" }
+    ],
+    problemSolving: [
+      {
+        title: "배포 후 Nginx 301 리다이렉트로 인한 HTTP POST 소실 문제 해결",
+        problem: "운영 서버 배포 후 '모임방 생성(POST)' API 요청 시 Payload(Body)가 소실되고 405 Method Not Allowed 오류 발생",
+        cause: "Nginx HTTPS 강제 전환 시 301 Redirect를 사용하여 클라이언트가 재요청 시 POST를 GET으로 강제 변환하는 HTTP 스펙 종속성 발생",
+        solution: "Nginx 프록시 설정에서 308 Permanent Redirect로 상태 코드를 전면 교체하여 기존 HTTP 메서드와 Body 데이터 유지 강제",
+        result: "HTTP 메서드 변환 없이 네트워크 프록시 환경에서 정상 동작 보장 및 서비스 장애 해결"
+      }
     ],
     situation:
       "친구/동료 모임에서 공동 결제 후 정산이 번거로운 사용자를 위해, 모임방 생성부터 정산/송금, 소비 리포트까지 한 흐름으로 제공하는 모바일 더치페이 서비스입니다. 프로젝트 후반에는 단순히 기능 구현을 넘어 실제 운영 환경에서 안정적으로 배포되고 동작하는 구조가 필요했고, 인증 흐름과 외부 연동, 프록시, 메시징, 모니터링까지 여러 계층의 문제가 동시에 드러났습니다.",
