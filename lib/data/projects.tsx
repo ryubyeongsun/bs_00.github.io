@@ -38,18 +38,18 @@ export const PROJECTS = [
     ],
     problemSolving: [
       {
-        title: "예산 오차 및 엉뚱한 상품 매핑 문제 해결",
-        problem: "1. 예산 오차: AI가 30일 식단 생성 시 재료비 합계가 사용자 예산(30만원)과 크게 차이 발생\n→ 예산 기반 서비스인데 예산이 안 맞음\n\n2. 상품 매핑 오류: AI가 식단 재료명(“닭가슴살 100g x 30팩”)을 그대로 11번가에 검색\n→ 계란박스·대용량 묶음 등 엉뚱한 상품 노출",
-        cause: "1. AI API는 식재료 종류만 반환\n: 시장 단가를 모르기 때문에 예산 파라미터를 전달해도 총 재료비 합계 제어 불가\n\n2. 재료명에 수량·단위·포장 정보 혼재\n: 그대로 검색어 사용 시 노이즈 발생 → 원하는 단품 상품 연결 실패",
-        solution: "1. filterItemsToBudget() — Greedy Filter\n: 재료를 추정 단가 기준 내림차순 정렬, 예산 초과 시 비싼 항목부터 순차 제거 (허용 범위 : 예산 x 1.15 이내)\n\n2. IngredientQueryNormalizer\n: 수량·단위·불용어 제거 (\"닭가슴살-100g×30팩\" → \"닭가슴살\")\n카테고리 화이트리스트 필터링 → 후보 TopN 스코어링 → 3개 이상 시 AI rerank → 대표 상품 1개 선정",
-        result: "[예산오차] 무제한 초과 → 예산 ±15% 이내로 제어\n[상품 정확도] 엉뚱한 상품 노출 → 키워드 정규화로 매핑 정확도 개선\n[API 안정성] 실패 시 MOCK Fallback으로 서비스 중단 없이 기본 응답 제공"
+        title: "예산 오차 및 엉뚱한 상품 매핑 정확도 한계 극복",
+        problem: "AI 생성 식단의 재료비가 예산을 크게 초과하고,\n단순 키워드 검색 시 묶음/대용량 등 엉뚱한 상품이 매핑되는 문제 발생",
+        cause: "API가 시장 단가를 몰라 예산 제어가 불가했고,\n11번가 검색 시 수량/단위 텍스트가 혼재되어 매핑 노이즈 발생",
+        solution: "Greedy 알고리즘 기반 예산 초과분 내림차순 필터링 적용\nIngredientQueryNormalizer로 검색어 정규화(수량/단위 제거)",
+        result: "사용자 예산 ±15% 이내로 재료비 제어 성공\n엉뚱한 상품 노출 방지로 장보기 리스트 품질 대폭 향상"
       },
       {
-        title: "AI API 응답 지연 및 타임아웃 해결",
-        problem: "외부 AI API가 식단 생성에 8~10초 소요\n→ 동기 처리 시 브라우저 타임아웃(30초) 임박\n→ 사용자 응답 없음으로 인식\n→ 서비스 이탈 발생",
-        cause: "식단 생성 요청이 동기적으로 처리되어\nAI API 응답이 올 때까지 스레드 블로킹\n클라이언트는 응답 대기 중 아무것도 할 수 없는 상태",
-        solution: "@Async + CompletableFuture 비동기 전환\n① 요청 즉시 200 응답 반환\n② 백그라운드에서 AI API 처리\n③ 프론트 폴링으로 완료 확인 (1초 간격 GET 요청)",
-        result: "[응답 시간] 8~10초 → 즉시(3초 이하) (80% 개선)\n[타임아웃 에러율] 발생 → 비동기전환으로 해결 (구조적 해소)\n[사용자 경험] 대기 화면 → 진행률 표시로 자연스러운 UX"
+        title: "AI API의 8~10초 응답 지연으로 인한 타임아웃 해결",
+        problem: "외부 AI API가 식단 생성에 8~10초 소요되어,\n브라우저 타임아웃 및 서비스 이탈 발생",
+        cause: "식단 생성 요청이 동기적으로 처리되어 스레드가 블로킹되고\n클라이언트가 대기 상태에 빠짐",
+        solution: "@Async + CompletableFuture 기반 비동기 파이프라인 전환\n프론트엔드 폴링(1초 간격) 구조 적용",
+        result: "응답 시간 80% 개선(즉시 응답 반환)\n타임아웃 에러율 0% 달성으로 사용자 경험 보장"
       }
     ],
     situation:
@@ -82,6 +82,164 @@ export const PROJECTS = [
       { label: "JWT RTR", desc: "일반 JWT 대신 Refresh Token 사용 시마다 토큰을 즉각 폐기/무효화하여 탈취 및 악용을 구조적으로 차단했습니다." },
       { label: "@Async", desc: "전체 WebFlux 전환 비용을 피하면서도 기존 Spring MVC 구조 내에서 AI API 대기 스레드 블로킹 문제를 효율적으로 해결했습니다." }
     ],
+    troubleshooting: {
+      title: "AI 식단 파이프라인 지연 및 커머스 연동 정합성 문제 해결",
+      date: "2025-12",
+      environment:
+        "Spring Boot 3.5.8, Java 17, MyBatis 3.0.5, MySQL 8.0, Vue.js 3.5.24",
+      sections: [
+        {
+          title: "1. [Problem 1] 식재료 예산 오차 및 엉뚱한 상품 매핑",
+          content: (
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <strong>예산 오차:</strong> AI는 식재료 종류만 반환하여 11번가 검색 시 사용자가 설정한 예산(30만 원)을 크게 초과(약 42만 원)하는 문제 발생.
+              </li>
+              <li>
+                <strong>상품 매핑 오류:</strong> "닭가슴살-100g x 30팩" 같은 구체적인 AI 추천 문자열을 그대로 검색 시 노이즈가 발생해 '계란 박스' 등 엉뚱한 상품이 노출됨.
+              </li>
+            </ul>
+          ),
+        },
+        {
+          title: "2. [Resolution 1] 정규화 필터 및 예산 최적화 (Greedy Filter)",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <strong>2.1 IngredientQueryNormalizer (키워드 정규화)</strong>
+                <p className="mt-1">
+                  수량/단위/불용어를 제거("닭가슴살-100g x 30팩" → "닭가슴살")하고 카테고리 화이트리스트 필터링을 적용해 매핑 정확도를 높였습니다.
+                </p>
+              </div>
+              <div>
+                <strong>2.2 filterItemsToBudget() - Greedy Filter</strong>
+                <p className="mt-1">
+                  검색된 재료들을 추정 단가 기준으로 내림차순 정렬 후, 예산 초과 시 가장 비싼 항목부터 순차적으로 제거하여 예산의 ±15% 이내로 제어했습니다.
+                </p>
+              </div>
+              <div>
+                <strong>2.3 Mock Fallback 패턴 적용</strong>
+                <p className="mt-1">
+                  11번가 API 장애 발생 시 서비스가 중단되지 않도록 사전에 준비된 Mock Data를 반환하는 Fallback 로직을 적용해 안정성을 보장했습니다.
+                </p>
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "3. [Problem 2] AI 식단 생성 API 타임아웃",
+          content: (
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <strong>현상:</strong> 30일치 식단(90끼) 생성에 8~10초가 소요되어, 동기 처리 시 브라우저 타임아웃(30초)에 임박하거나 스레드가 블로킹됨.
+              </li>
+              <li>
+                <strong>영향:</strong> 클라이언트는 대기 상태에 빠지고, 사용자는 응답 없음으로 인식하여 이탈 발생.
+              </li>
+            </ul>
+          ),
+        },
+        {
+          title: "4. [Resolution 2] @Async 기반 비동기 전환",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <strong>4.1 Spring MVC에서 @Async 분리 (WebFlux 대안)</strong>
+                <p>
+                  전체 시스템을 WebFlux로 전환하기에는 리팩토링 비용이 컸으므로, 기존 구조를 유지하며 비동기 처리만 분리하는 <code>@Async + CompletableFuture</code>를 채택했습니다.
+                </p>
+                <CodeBlock label="MealService.java">
+                  {`@Async("taskExecutor")
+public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest request) {
+    // 1. 프론트에 즉시 200 응답 반환 후 백그라운드 처리
+    String aiResult = restTemplate.postForObject(AI_API_URL, request, String.class);
+    return CompletableFuture.completedFuture(saveMealPlan(aiResult));
+}`}
+                </CodeBlock>
+              </div>
+              <div>
+                <strong>4.2 프론트엔드 폴링 (진행률 표시)</strong>
+                <p>
+                  서버에서 백그라운드 처리가 진행되는 동안 프론트엔드(Vue.js)에서는 1초 간격으로 상태를 확인(Polling)하며 사용자에게 진행률 UI를 제공했습니다.
+                </p>
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "5. 종합 성과 (Results)",
+          content: (
+            <ul className="list-disc list-inside space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-md">
+              <li>
+                <strong>예산 및 정확도 제어:</strong> 예산 오차 무제한 초과를 ±15% 이내로 제어하고, 정규화로 엉뚱한 상품 노출을 차단했습니다.
+              </li>
+              <li>
+                <strong>타임아웃 에러 0%:</strong> 동기 처리 대기 시간(8~10초)을 즉시 반환으로 개선(80% 단축)하여 UX를 개선했습니다.
+              </li>
+              <li>
+                <strong>안정적인 커머스 연동:</strong> API 실패 시 Mock Fallback을 통해 서비스 중단 없이 유연하게 대처했습니다.
+              </li>
+            </ul>
+          ),
+        },
+      ],
+    },
+  },
+  {
+    id: 2,
+    title: "CONY — 기프티콘 관리 및 판매 서비스",
+    description:
+      "AI(OCR) 기프티콘 자동 등록, 위치 기반 스마트 알림, 유효기간 임박 자동 판매, 공유방 기능을 제공하는 기프티콘 관리·거래 앱",
+    period: "2026.01 ~ 2026.02 (6주)",
+    team: "6명 (FE 2, BE 2, AI 1, INFRA 1)",
+    role: "백엔드 (거래 도메인 전담)",
+    techStack: [
+      "Java 17",
+      "Spring Boot 3.5.9",
+      "JPA",
+      "Spring Security",
+      "React Native",
+      "TypeScript",
+      "MySQL 8.0",
+      "Redis",
+      "Docker",
+      "Jenkins",
+      "AWS S3",
+    ],
+    contribution: {
+      percentage: "25%",
+      summary: "결제 트랜잭션 동시성 제어 및 위치 기반 성능 최적화",
+      details: [
+        { title: "PESSIMISTIC_WRITE 비관적 락", percentage: 10, description: "동시 구매 결제 시 데이터 정합성 보장 및 중복 거래 차단" },
+        { title: "거래 프로세스 원자적 설계", percentage: 10, description: "본인 검증, 잔액 확인, 소유권 이전을 하나의 트랜잭션으로 통합" },
+        { title: "Redis GEO 반경 검색 API", percentage: 5, description: "Haversine 공식 의존성 탈피, 인메모리 반경 검색 구현" }
+      ],
+    },
+    teamComposition: [
+      { role: "프론트엔드", count: 2, isMe: false, tasks: "React Native 모바일 UI/UX 설계 및 화면 구현" },
+      { role: "백엔드", count: 1, isMe: false, tasks: "기프티콘 관리 핵심 API, 공유방, 알림" },
+      { role: "백엔드 (본인)", count: 1, isMe: true, tasks: "거래 시스템 검증, 배치 스케줄러, 위치 검색 최적화" },
+      { role: "인프라", count: 1, isMe: false, tasks: "CI/CD 배포 파이프라인, AWS EC2 구성" },
+      { role: "AI", count: 1, isMe: false, tasks: "OCR 이미지 텍스트 추출 자동화 모델" }
+    ],
+    problemSolving: [
+      {
+        title: "MySQL Haversine 위치 검색 성능 한계 및 DB 부하 극복",
+        problem: "MySQL에서 Haversine 공식으로 사용자 주변 매장 검색 시\nO(N) 풀스캔이 발생하여 응답 속도 저하",
+        cause: "매 요청마다 삼각함수 연산을 수행하고 인덱스 활용이 불가하여\n매장 수 증가 시 DB 부하 급증",
+        solution: "위치 데이터를 Redis GEO 인메모리 캐시 계층으로 분리하고,\nPipeline을 활용해 브랜드명 일괄 조회 적용",
+        result: "반경 내 매장만 조회하여 거리 연산 부하를 완전 제거\n검색 속도 및 인프라 확장성 대폭 개선"
+      }
+    ],
+    situation:
+      "기프티콘 유효기간 만료로 인한 낙전 금액이 연간 수백억 원에 달합니다. 기존 서비스는 수동 등록이 번거롭고, 사용 가능한 매장을 찾기 어려우며, 유효기간 관리가 되지 않아 사용률이 낮았습니다. 특히 인기 상품에 여러 사용자가 동시에 구매를 시도하면 중복 거래가 발생할 위험이 있었습니다.",
+    task: "거래 중복 방지를 위한 동시성 제어, 자동 판매 등록 배치, 거리순 검색 성능을 안정적으로 구현하는 것이 목표였습니다. 동시성 제어를 통해 데이터 정합성을 보장하고, 위치 기반 검색의 성능을 최적화하며, 스케줄링을 통한 운영 자동화 시스템을 구축해야 했습니다.",
+    action: `1. 비관적 락 기반 동시성 제어: 판매글 조회 시 JPA PESSIMISTIC_WRITE 락을 적용해 동시 구매 Race Condition을 차단. 낙관적 락은 충돌 시 재시도 로직이 복잡해져 금융 거래 특성상 비관적 락을 선택.
+2. 거래 프로세스 3단 검증 설계: ① 판매 가능 상태(ON_SALE) 확인 ② 본인 상품 구매 차단 ③ 포인트 잔액 검증 통과 후, 포인트 차감/지급 및 판매 상태를 SOLD_OUT으로 변경하고 Manage 서버에 소유권 이전을 요청. 전체를 하나의 @Transactional로 묶어 원자적 처리.
+3. 배치 자동화: 매일 09:00에 Spring Scheduler 배치를 실행해 만료 판매글 삭제, 예약 판매 생성, PENDING → ON_SALE 전환을 자동화.
+4. Redis GEO 기반 위치 검색: 매장 좌표를 Redis GEO에 저장하고 GEORADIUS 명령으로 반경 검색 및 거리순 정렬을 캐시 계층에서 처리. Pipeline으로 다건 조회 시 네트워크 왕복 최소화.`,
+    result:
+      "🏆 SSAFY 14기 공통 프로젝트 우수상 수상. 비관적 락 적용으로 동시 구매 시 데이터 정합성 100% 보장, 중복 거래 완전 차단. Redis GEO로 위치 기반 검색 응답 속도 대폭 개선. Spring Scheduler로 수동 운영 작업 100% 제거.",
     retrospective: {
       regrets: [
         "락 대기가 길어질 경우 대규모 트래픽에서 처리량(TPS) 하락 우려",
@@ -102,6 +260,160 @@ export const PROJECTS = [
       { label: "Redis GEO & Pipeline", desc: "MySQL Haversine 삼각함수 풀스캔의 O(N) 연산 한계를 극복하고, 반경 조회와 일괄 조회로 네트워크 왕복을 최소화했습니다." },
       { label: "Spring Scheduler", desc: "별도의 무거운 배치 프레임워크 도입 없이, 예약 판매 및 만료 처리를 경량으로 스케줄링하여 운영을 자동화했습니다." }
     ],
+    troubleshooting: {
+      title: "동시 구매 중복 거래 방지 및 위치 검색 성능 최적화",
+      date: "2026-02",
+      environment:
+        "Spring Boot 3.5.9, Java 17, JPA, MySQL 8.0, Redis, React Native 0.83.1",
+      sections: [
+        {
+          title: "1. [Problem 1] 동시 구매 시 중복 거래 발생",
+          content: (
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <strong>현상:</strong> 동일 판매글에 다수의 구매 요청이 동시에 몰리면 중복 결제가 발생할 수 있었습니다.
+              </li>
+              <li>
+                <strong>영향:</strong> 이미 판매 완료된 상품에 대해 여러 사용자가 결제를 성공하는 심각한 데이터 정합성 문제가 발생했습니다.
+              </li>
+            </ul>
+          ),
+        },
+        {
+          title: "2. [Resolution 1] PESSIMISTIC_WRITE 비관적 락 적용",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <strong>2.1 금융 거래 특성상 확실한 순차 처리 선택</strong>
+                <p className="mt-1">
+                  낙관적 락(Optimistic Lock)은 충돌 시 재시도 로직이 복잡해지므로, 단 한 건의 중복 결제도 허용하지 않기 위해 DB 레벨의 강력한 동시성 제어인 비관적 락을 선택했습니다.
+                </p>
+                <CodeBlock label="SaleRepository.java">
+                  {`@Lock(LockModeType.PESSIMISTIC_WRITE)
+@Query("SELECT s FROM Sale s WHERE s.id = :saleId")
+Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
+                </CodeBlock>
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "3. [Problem 2] MySQL 위치 검색 성능의 한계 (O(N) 풀스캔)",
+          content: (
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <strong>원인 1:</strong> 매 요청마다 전체 매장에 대해 Haversine 삼각함수(sin, cos, acos) 연산을 수행했습니다.
+              </li>
+              <li>
+                <strong>원인 2:</strong> 거리 계산 결과 정렬 시 인덱스 활용이 불가능하여 DB 정렬 부하가 컸습니다.
+              </li>
+              <li>
+                <strong>원인 3:</strong> 브랜드별 최소 거리 계산에 GROUP BY + 서브쿼리가 필요해 위치 검색 요청이 많아질수록 DB 부하가 급증했습니다.
+              </li>
+            </ul>
+          ),
+        },
+        {
+          title: "4. [Resolution 2] Redis GEO & Pipeline 기반 캐시 계층 분리",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <strong>4.1 Redis GEOSEARCH로 반경 검색</strong>
+                <p className="mt-1">
+                  위치 데이터를 인메모리 기반 Redis로 분리했습니다. <code>GEOSEARCH</code>로 반경 5km 내 매장만 조회하여 원거리 매장 연산 자체를 제거했습니다.
+                </p>
+              </div>
+              <div>
+                <strong>4.2 Pipeline을 활용한 일괄 조회</strong>
+                <p className="mt-1">
+                  조회된 매장들의 브랜드명을 가져올 때, Redis Pipeline을 활용하여 N번 왕복 대신 1회 요청으로 네트워크 통신을 최소화했습니다.
+                </p>
+              </div>
+              <div>
+                <strong>4.3 인메모리 정렬로 DB GROUP BY 제거</strong>
+                <p className="mt-1">
+                  애플리케이션 단에서 브랜드별 최소 거리 Map을 생성하고 메모리에서 정렬하는 경량 처리 방식으로 개선하여 DB 부하를 차단했습니다.
+                </p>
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "5. 종합 성과 (Results)",
+          content: (
+            <ul className="list-disc list-inside space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-md">
+              <li>
+                <strong>결제 무결성 확보:</strong> 비관적 락으로 트랜잭션 경합 시 발생할 수 있는 중복 결제를 원천 차단했습니다.
+              </li>
+              <li>
+                <strong>위치 검색 병목 해소:</strong> 전체 매장 풀스캔에서 반경 내 매장만 인메모리로 조회 및 정렬하도록 개선하여 검색 응답 속도를 극대화했습니다.
+              </li>
+              <li>
+                <strong>네트워크 최적화:</strong> Pipeline 적용으로 캐시 서버와의 통신 오버헤드를 1회로 단축시켰습니다.
+              </li>
+            </ul>
+          ),
+        },
+      ],
+    },
+  },
+  {
+    id: 3,
+    title: "덕치 (Duckchi) — 모임 기반 더치페이/정산 서비스",
+    description:
+      "모임방 생성부터 결제 등록, 정산 요청/송금, 소비 리포트까지 한 흐름으로 사용하는 모바일 더치페이 서비스",
+    period: "2026.02 ~ 2026.03 (5주)",
+    team: "6명 (FE 1, FullStack 4, INFRA 1)",
+    role: "INFRA / 인증 백엔드 전담",
+    techStack: [
+      "Java 17",
+      "Spring Boot 3.5",
+      "Spring Security",
+      "JWT",
+      "Redis",
+      "Kafka",
+      "Docker Compose",
+      "Jenkins",
+      "Nginx",
+      "AWS EC2",
+      "RDS",
+      "Prometheus",
+      "Grafana",
+    ],
+    contribution: {
+      percentage: "15%",
+      summary: "MSA 인프라 구축, 배포 자동화, 게이트웨이 인증 통합",
+      details: [
+        { title: "Docker Compose MSA 배포", percentage: 5, description: "5개 마이크로서비스 및 Kafka, Redis 통합 런타임 환경 구성" },
+        { title: "Spring Cloud Gateway JWT", percentage: 5, description: "라우팅 단일 진입점에서 토큰 검증 및 인가 처리" },
+        { title: "Jenkins CI/CD 자동화", percentage: 5, description: "브랜치별(develop/release) 배포 환경 분리 및 자동화" }
+      ],
+    },
+    teamComposition: [
+      { role: "프론트엔드", count: 1, isMe: false, tasks: "React Native 클라이언트 화면 구성 및 상태 관리" },
+      { role: "풀스택", count: 4, isMe: false, tasks: "모임 정산, 결제 내역 등록, 소비 리포트 로직 개발" },
+      { role: "인프라 / 백엔드 (본인)", count: 1, isMe: true, tasks: "MSA 인프라 전체 구성, Gateway 인증 통합, CI/CD" }
+    ],
+    problemSolving: [
+      {
+        title: "배포 후 Nginx 301 리다이렉트로 인한 HTTP POST 소실 문제 해결",
+        problem: "운영 서버 배포 후 '모임방 생성(POST)' API 요청 시\nPayload(Body)가 소실되고 405 Method Not Allowed 오류 발생",
+        cause: "Nginx HTTPS 강제 전환 시 301 Redirect를 사용하여\n클라이언트가 재요청 시 POST를 GET으로 강제 변환하는 HTTP 스펙 종속성 발생",
+        solution: "Nginx 프록시 설정에서 308 Permanent Redirect로 상태 코드를 전면 교체하여\n기존 HTTP 메서드와 Body 데이터 유지 강제",
+        result: "HTTP 메서드 변환 없이 네트워크 프록시 환경에서 정상 동작 보장\n기존 POST 스펙을 유지하며 서비스 장애 완벽 해결"
+      }
+    ],
+    situation:
+      "친구/동료 모임에서 공동 결제 후 정산이 번거로운 사용자를 위해, 모임방 생성부터 정산/송금, 소비 리포트까지 한 흐름으로 제공하는 모바일 더치페이 서비스입니다. 프로젝트 후반에는 단순히 기능 구현을 넘어 실제 운영 환경에서 안정적으로 배포되고 동작하는 구조가 필요했고, 인증 흐름과 외부 연동, 프록시, 메시징, 모니터링까지 여러 계층의 문제가 동시에 드러났습니다.",
+    task: "인프라 담당으로서 EC2 기반 운영 환경에 MSA 서비스를 안정적으로 배포하고, CI/CD와 모니터링 체계를 구축해야 했습니다. 백엔드에서는 카카오 OAuth 로그인, JWT 토큰 관리, Redis 기반 세션 관리를 구현하고, 운영 환경에서 발생하는 인증/리다이렉트/시간대 이슈를 빠르게 해결하는 것이 핵심 과제였습니다.",
+    action: `1. Docker Compose 기반 운영 환경 구성: EC2 위에 Gateway, Core, Pay, Insight, Discovery 서비스를 컨테이너로 배포하고 Redis, Kafka를 함께 구성해 서비스 간 의존성을 정리.
+2. Jenkins CI/CD 분리: develop 브랜치는 CI(빌드/테스트), release 브랜치는 CD(Docker Hub 푸시 → EC2 재배포)로 목적을 분리하여 배포 안정성 확보.
+3. Nginx + HTTPS 운영 안정화: 리버스 프록시, TLS 인증서 설정, 301→308 리다이렉트 변경으로 POST 메서드 유지 문제 해결. API/SSE/정적 리소스 경로별 프록시 정책 분리.
+4. 인증 흐름 구현: 카카오 OAuth 로그인 → JWT Access Token(30분) + Refresh Token(7일) 발급. Redis에 RTK 저장(TTL 기반 자동 만료), 로그아웃 시 삭제.
+5. 운영 이슈 대응: Kafka 누락으로 insight-service 기동 실패, RDS 스키마 부재로 서비스 다운, 금융 API 시간대(KST/UTC) 차이 문제를 로그 추적으로 해결.
+6. 모니터링 체계 구축: Spring Boot Actuator + Prometheus + Grafana를 연동해 CPU, 메모리, HTTP 요청 수를 대시보드로 시각화.`,
+    result:
+      "Docker Compose 하나로 MSA 5개 서비스 + 인프라를 재현 가능한 환경 구축. Jenkins CI/CD로 수동 배포 작업 100% 제거. Nginx 308 리다이렉트 적용으로 운영 환경 POST 메서드 유지 문제 해결. Prometheus + Grafana로 배포 후 서비스 상태 실시간 모니터링 체계 확립.",
     retrospective: {
       regrets: [
         "단일 EC2 운영으로 서비스가 늘어나면 리소스 한계. 멀티 노드(ECS, K8s) 전환을 고려해야 함",

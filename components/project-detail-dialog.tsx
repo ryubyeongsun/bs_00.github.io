@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Calendar, User, Users, Github, Network, BookOpen, TrendingUp, CheckCircle2 } from "lucide-react"
+import { ExternalLink, Calendar, User, Users, Github, Network, BookOpen, AlertCircle, TrendingUp, CheckCircle2 } from "lucide-react"
 import Image, { StaticImageData } from "next/image"
+import { TroubleshootingDialog } from "./troubleshooting-dialog"
 import { Progress } from "./ui/progress"
 
 export interface TeamMember {
@@ -276,66 +277,23 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
               </div>
             )}
 
-            {/* Section 2.5: 핵심 문제 해결 (Problem Solving) */}
+            {/* Section 3: 문제 해결 및 트러블슈팅 바 (Bottom) */}
             {project.problemSolving && project.problemSolving.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
-                  핵심 문제 해결 <Badge variant="outline" className="text-[10px] bg-zinc-950 border-zinc-700 text-zinc-400 px-1.5 h-4">Problem Solving</Badge>
-                </h3>
-                <div className="grid gap-6">
-                  {project.problemSolving.map((ps, i) => (
-                    <div key={i} className="p-6 rounded-xl border border-zinc-800 bg-[#111111] flex flex-col xl:flex-row gap-6">
-                      
-                      {/* Left: 텍스트 흐름 (문제 -> 원인 -> 해결 -> 결과) */}
-                      <div className="flex-1 space-y-5">
-                        <h4 className="font-bold text-zinc-100 text-[15px] border-b border-zinc-800 pb-3 mb-4">{ps.title}</h4>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <h5 className="text-[12px] font-bold text-red-400 flex items-center gap-1.5">
-                              <span className="bg-red-950 px-1.5 py-0.5 rounded text-red-400">🚨</span> 문제 상황
-                            </h5>
-                            <p className="text-[13px] text-zinc-400 leading-relaxed whitespace-pre-line break-keep">{ps.problem}</p>
-                          </div>
-                          <div className="space-y-2">
-                            <h5 className="text-[12px] font-bold text-orange-400 flex items-center gap-1.5">
-                              <span className="bg-orange-950 px-1.5 py-0.5 rounded text-orange-400">🔎</span> 원인 분석
-                            </h5>
-                            <p className="text-[13px] text-zinc-400 leading-relaxed whitespace-pre-line break-keep">{ps.cause}</p>
-                          </div>
-                        </div>
-
-                        <div className="bg-blue-950/20 border border-blue-900/50 p-4 rounded-lg space-y-2">
-                          <h5 className="text-[12px] font-bold text-blue-400 flex items-center gap-1.5">
-                            <span className="bg-blue-900 px-1.5 py-0.5 rounded text-blue-300">💡</span> 해결 방법
-                          </h5>
-                          <p className="text-[13px] text-zinc-300 leading-relaxed font-medium whitespace-pre-line break-keep">{ps.solution}</p>
-                        </div>
-
-                        <div className="bg-green-950/20 border border-green-900/50 p-4 rounded-lg space-y-2">
-                          <h5 className="text-[12px] font-bold text-green-400 flex items-center gap-1.5">
-                            <span className="bg-green-900 px-1.5 py-0.5 rounded text-green-300">🏆</span> 결과 및 성과
-                          </h5>
-                          <p className="text-[13px] text-zinc-300 leading-relaxed font-medium whitespace-pre-line break-keep">{ps.result}</p>
-                        </div>
-                      </div>
-
-                      {/* Right: Before/After 이미지 플레이스홀더 */}
-                      <div className="xl:w-[450px] shrink-0 border border-zinc-800 border-dashed rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center min-h-[300px] p-6 text-center">
-                        <Image
-                          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%2352525b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E"
-                          width={48}
-                          height={48}
-                          alt="placeholder"
-                          className="mb-4 opacity-50"
-                        />
-                        <p className="text-zinc-500 text-[13px] font-medium mb-1">Before / After 비교 이미지 영역</p>
-                        <p className="text-zinc-600 text-[11px]">이 영역에 나중에 개선 전후 이미지가 삽입됩니다.</p>
-                      </div>
-
+              <div className="space-y-3">
+                <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-zinc-800 p-2 rounded-lg">
+                      <AlertCircle className="w-5 h-5 text-zinc-300" />
                     </div>
-                  ))}
+                    <div>
+                      <h4 className="font-bold text-white text-[14px] flex items-center gap-2">
+                        핵심 문제 해결
+                        <Badge variant="outline" className="text-[10px] bg-zinc-950 border-zinc-700 text-zinc-400 px-1.5 h-4">Problem Solving</Badge>
+                      </h4>
+                      <p className="text-[12px] text-zinc-400 mt-0.5">프로젝트 진행 중 겪은 주요 문제와 극복 과정</p>
+                    </div>
+                  </div>
+                  <TroubleshootingDialog logs={project.problemSolving} />
                 </div>
               </div>
             )}
