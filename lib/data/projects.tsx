@@ -14,7 +14,7 @@ export const PROJECTS = [
       "TDEE 기반 AI 맞춤 식단 자동 생성 및 BMI 연동 3D 체형 시각화 헬스케어 플랫폼",
     period: "2025.11 ~ 2025.12 (4주)",
     team: "2명 (FE 1, BE 1)",
-    role: "Backend Developer",
+    role: "백엔드 전체 담당",
     techStack: [
       "Java 17",
       "Spring Boot 3.5",
@@ -25,7 +25,7 @@ export const PROJECTS = [
     ],
     contribution: {
       percentage: "50%",
-      summary: "백엔드 전체 담당 (2인 페어 프로젝트)",
+      summary: "백엔드 전체 단독 설계 (BE 1인, 4주)",
       details: [
         "TDEE 기반 AI 맞춤 식단 생성 API 전체 설계 및 구현",
         "Spring @Async + CompletableFuture 비동기 파이프라인 설계",
@@ -168,8 +168,8 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     description:
       "AI(OCR) 기프티콘 자동 등록, 위치 기반 스마트 알림, 유효기간 임박 자동 판매, 공유방 기능을 제공하는 기프티콘 관리·거래 앱",
     period: "2026.01 ~ 2026.02 (6주)",
-    team: "6명 (FE 3, BE 3)",
-    role: "Backend Developer (거래 도메인 담당)",
+    team: "6명 (FE 2, BE 2, AI 1, INFRA 1)",
+    role: "백엔드 (거래 도메인 전담)",
     techStack: [
       "Java 17",
       "Spring Boot 3.5.9",
@@ -185,7 +185,7 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     ],
     contribution: {
       percentage: "33%",
-      summary: "BE 3인 중 거래(Payment) 도메인 전담",
+      summary: "거래 시스템, 결제 연동, 배치 자동화 및 위치 검색 핵심 전담",
       details: [
         "거래 프로세스 전체 설계 및 구현 (구매 검증 → 결제 → 소유권 이전)",
         "PESSIMISTIC_WRITE 비관적 락 적용으로 동시 구매 Race Condition 차단",
@@ -321,8 +321,8 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     description:
       "모임방 생성부터 결제 등록, 정산 요청/송금, 소비 리포트까지 한 흐름으로 사용하는 모바일 더치페이 서비스",
     period: "2026.02 ~ 2026.03 (5주)",
-    team: "6명 (FE 3, BE 3)",
-    role: "Infrastructure Lead + Backend Developer (Auth)",
+    team: "6명 (FE 1, FullStack 4, INFRA 1)",
+    role: "INFRA / 인증 백엔드 전담",
     techStack: [
       "Java 17",
       "Spring Boot 3.5",
@@ -340,7 +340,7 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     ],
     contribution: {
       percentage: "40%",
-      summary: "MSA 배포 환경 전체 구축 + 인증 시스템 구현",
+      summary: "Infra 1인 전담 (MSA 배포 환경 구축 + 인증 시스템 구현)",
       details: [
         "Docker Compose 기반 MSA 5개 서비스 + Redis + Kafka 컨테이너 배포 환경 전체 구성",
         "Jenkins CI/CD 파이프라인 구축 (develop/release 브랜치별 분리)",
