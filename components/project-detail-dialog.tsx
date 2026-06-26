@@ -35,6 +35,7 @@ export interface ProblemSolving {
   solution: string
   result: string
   imagePlaceholder?: boolean
+  hasImage?: boolean
 }
 
 export interface ProjectContribution {

@@ -13,8 +13,8 @@ export const PROJECTS = [
     description:
       "TDEE 기반 AI 맞춤 식단 자동 생성 및 BMI 연동 3D 체형 시각화 헬스케어 플랫폼",
     period: "2025.11 ~ 2025.12 (4주)",
-    team: "2명 (풀스택 1, 풀스택(백엔드 전담) 1)",
-    role: "풀스택 (백엔드 전담)",
+    team: "2명 (FE 1, BE 1)",
+    role: "백엔드 전체 담당",
     techStack: [
       "Java 17",
       "Spring Boot 3.5",
@@ -34,23 +34,22 @@ export const PROJECTS = [
     },
     teamComposition: [
       { role: "풀스택", count: 1, isMe: false, tasks: "Vue.js 모바일 UI/UX, Three.js 3D 체형 시각화" },
-      { role: "백엔드", count: 1, isMe: true, tasks: "AI 식단 생성 API, 장보기 연동, 예산 필터링, 비동기 파이프라인" }
+      { role: "풀스택 (백엔드 전담)", count: 1, isMe: true, tasks: "AI 식단 생성 API, 장보기 연동, 예산 필터링, 비동기 파이프라인" }
     ],
     problemSolving: [
       {
-        title: "예산 오차 및 엉뚱한 상품 매핑 문제 해결",
-        problem: "1. 예산 오차: AI가 30일 식단 생성 시 재료비 합계가 사용자 예산(30만원)과 크게 차이 발생\n→ 예산 기반 서비스인데 예산이 안 맞음\n\n2. 상품 매핑 오류: AI가 식단 재료명(“닭가슴살 100g x 30팩”)을 그대로 11번가에 검색\n→ 계란박스·대용량 묶음 등 엉뚱한 상품 노출",
-        cause: "1. AI API는 식재료 종류만 반환\n: 시장 단가를 모르기 때문에 예산 파라미터를 전달해도 총 재료비 합계 제어 불가\n\n2. 재료명에 수량·단위·포장 정보 혼재\n: 그대로 검색어 사용 시 노이즈 발생 → 원하는 단품 상품 연결 실패",
-        solution: "1. filterItemsToBudget() — Greedy Filter\n: 재료를 추정 단가 기준 내림차순 정렬, 예산 초과 시 비싼 항목부터 순차 제거 (허용 범위 : 예산 x 1.15 이내)\n\n2. IngredientQueryNormalizer\n: 수량·단위·불용어 제거 (\"닭가슴살-100g×30팩\" → \"닭가슴살\")\n카테고리 화이트리스트 필터링 → 후보 TopN 스코어링 → 3개 이상 시 AI rerank → 대표 상품 1개 선정",
-        result: "[예산오차] 무제한 초과 → 예산 ±15% 이내로 제어\n[상품 정확도] 엉뚱한 상품 노출 → 키워드 정규화로 매핑 정확도 개선\n[API 안정성] 실패 시 MOCK Fallback으로 서비스 중단 없이 기본 응답 제공"
+        title: "예산 오차 및 엉뚱한 상품 매핑 정확도 한계 극복",
+        problem: "AI 생성 식단의 재료비가 예산을 크게 초과하고,\n단순 키워드 검색 시 묶음/대용량 등 엉뚱한 상품이 매핑되는 문제 발생",
+        cause: "API가 시장 단가를 몰라 예산 제어가 불가했고,\n11번가 검색 시 수량/단위 텍스트가 혼재되어 매핑 노이즈 발생",
+        solution: "Greedy 알고리즘 기반 예산 초과분 내림차순 필터링 적용\nIngredientQueryNormalizer로 검색어 정규화(수량/단위 제거)",
+        result: "사용자 예산 ±15% 이내로 재료비 제어 성공\n엉뚱한 상품 노출 방지로 장보기 리스트 품질 대폭 향상"
       },
       {
-        title: "AI API 응답 지연 및 타임아웃 해결",
-        problem: "외부 AI API가 식단 생성에 8~10초 소요\n→ 동기 처리 시 브라우저 타임아웃(30초) 임박\n→ 사용자 응답 없음으로 인식\n→ 서비스 이탈 발생",
-        cause: "식단 생성 요청이 동기적으로 처리되어\nAI API 응답이 올 때까지 스레드 블로킹\n클라이언트는 응답 대기 중 아무것도 할 수 없는 상태",
-        solution: "@Async + CompletableFuture 비동기 전환\n① 요청 즉시 200 응답 반환\n② 백그라운드에서 AI API 처리\n③ 프론트 폴링으로 완료 확인 (1초 간격 GET 요청)",
-        result: "[응답 시간] 8~10초 → 즉시(3초 이하) (80% 개선)\n[타임아웃 에러율] 발생 → 비동기전환으로 해결 (구조적 해소)\n[사용자 경험] 대기 화면 → 진행률 표시로 자연스러운 UX",
-        imagePlaceholder: false
+        title: "AI API의 8~10초 응답 지연으로 인한 타임아웃 해결",
+        problem: "외부 AI API가 식단 생성에 8~10초 소요되어,\n브라우저 타임아웃 및 서비스 이탈 발생",
+        cause: "식단 생성 요청이 동기적으로 처리되어 스레드가 블로킹되고\n클라이언트가 대기 상태에 빠짐",
+        solution: "@Async + CompletableFuture 기반 비동기 파이프라인 전환\n프론트엔드 폴링(1초 간격) 구조 적용",
+        result: "응답 시간 80% 개선(즉시 응답 반환)\n타임아웃 에러율 0% 달성으로 사용자 경험 보장"
       }
     ],
     situation:
@@ -192,7 +191,7 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     description:
       "AI(OCR) 기프티콘 자동 등록, 위치 기반 스마트 알림, 유효기간 임박 자동 판매, 공유방 기능을 제공하는 기프티콘 관리·거래 앱",
     period: "2026.01 ~ 2026.02 (6주)",
-    team: "6명 (FE 2, BE 2, AI 1, 인프라 1)",
+    team: "6명 (FE 2, BE 2, AI 1, INFRA 1)",
     role: "백엔드 (거래 도메인 전담)",
     techStack: [
       "Java 17",
@@ -225,11 +224,11 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     ],
     problemSolving: [
       {
-        title: "위치 기반 판매글 검색 성능 개선",
-        problem: "사용자 위치 기반 \"가까운 매장순\" 판매글 정렬 시\nMySQL에서 Haversine 공식으로 모든 매장과의 거리를 매 요청마다 계산\n→ 매장 수 증가 시 O(N) 풀스캔 + 수학 연산\n→ 응답 속도 저하 (매장이 많아질수록 느려짐)",
-        cause: "MySQL의 한계\n① 매 요청마다 전체 매장에 대해 Haversine 삼각함 연산 수행\n② 거리 계산 결과 정렬 시 인덱스 활용 불가\n③ 브랜드별 최소 거리 계산에 GROUP BY + 서브쿼리 필요\n→ 위치 검색 요청이 많아질수록 DB 부하 급증",
-        solution: "Redis GEO로 위치 데이터를 인메모리 캐시 계층에 분리\n① GEOSEARCH로 반경 5km 내 매장만 조회\n② Pipeline으로 브랜드명 일괄 조회\n③ 브랜드별 최소 거리 맵 생성 후 메모리 정렬",
-        result: "[정렬 방식] DB ORDER BY (인덱스 불가) → 인메모리 정렬\n[네트워크] 매장 N개 × N번 왕복 → Pipeline 1회\n[거리 계산] 매 요청마다 전체 매장 풀스캔 → 반경 내 매장만 조회\n[확장성] 매장 증가 시 성능 저하 → 캐시 계층 분리로 DB 부하 차단"
+        title: "MySQL Haversine 위치 검색 성능 한계 및 DB 부하 극복",
+        problem: "MySQL에서 Haversine 공식으로 사용자 주변 매장 검색 시\nO(N) 풀스캔이 발생하여 응답 속도 저하",
+        cause: "매 요청마다 삼각함수 연산을 수행하고 인덱스 활용이 불가하여\n매장 수 증가 시 DB 부하 급증",
+        solution: "위치 데이터를 Redis GEO 인메모리 캐시 계층으로 분리하고,\nPipeline을 활용해 브랜드명 일괄 조회 적용",
+        result: "반경 내 매장만 조회하여 거리 연산 부하를 완전 제거\n검색 속도 및 인프라 확장성 대폭 개선"
       }
     ],
     situation:
@@ -364,8 +363,8 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     description:
       "모임방 생성부터 결제 등록, 정산 요청/송금, 소비 리포트까지 한 흐름으로 사용하는 모바일 더치페이 서비스",
     period: "2026.02 ~ 2026.03 (5주)",
-    team: "6명 (FE 1, 풀스택 4, 인프라/백엔드 1)",
-    role: "인프라 / 백엔드 (본인)",
+    team: "6명 (FE 1, FullStack 4, INFRA 1)",
+    role: "INFRA / 인증 백엔드 전담",
     techStack: [
       "Java 17",
       "Spring Boot 3.5",
@@ -397,11 +396,11 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     ],
     problemSolving: [
       {
-        title: "배포 후 모임방 생성 API 실패 해결",
-        problem: "로컬에선 정상 동작하던 '모임방 생성(POST)' API가\n배포 후 지속 실패 (405 Method Not Allowed)",
-        cause: "① Nginx 301 상태 코드의 스펙 한계: 보안(HTTPS) 강제 전환을 위해 301 Moved Permanently 리다이렉트 사용 중\n② 프록시 계층 규약 충돌: 일부 클라이언트 환경에서 301 응답을 받고 재요청 시, 기존 POST 메서드를 GET으로 변환하고 Body를 버리는 HTTP 스펙 상의 종속성 문제 확인",
-        solution: "308 Permanent Redirect로 전면 교체\n① 최신 HTTP 스펙 규약 활용: Nginx nginx.conf 설정 파일 수정 (return 308 https://$host$request_uri; 적용)\n② 308 코드를 통해 리다이렉트 발생 시 기존 HTTP 메서드(POST)와 Body 데이터를 원본 그대로 유지하도록 네트워크 프록시 흐름 강제",
-        result: "[HTTP 메서드] POST → GET으로 변환됨 → POST 메서드 유지\n[Body 데이터] 페이로드 소실 → Body 데이터 정상 전달\n[API 안정성] 배포 후 통신 장애 발생 → 네트워크 프록시 환경 정상 동작 보장"
+        title: "배포 후 Nginx 301 리다이렉트로 인한 HTTP POST 소실 문제 해결",
+        problem: "운영 서버 배포 후 '모임방 생성(POST)' API 요청 시\nPayload(Body)가 소실되고 405 Method Not Allowed 오류 발생",
+        cause: "Nginx HTTPS 강제 전환 시 301 Redirect를 사용하여\n클라이언트가 재요청 시 POST를 GET으로 강제 변환하는 HTTP 스펙 종속성 발생",
+        solution: "Nginx 프록시 설정에서 308 Permanent Redirect로 상태 코드를 전면 교체하여\n기존 HTTP 메서드와 Body 데이터 유지 강제",
+        result: "HTTP 메서드 변환 없이 네트워크 프록시 환경에서 정상 동작 보장\n기존 POST 스펙을 유지하며 서비스 장애 완벽 해결"
       }
     ],
     situation:
