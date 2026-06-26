@@ -10,9 +10,8 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Calendar, User, Users, Github, Network, BookOpen, AlertCircle, TrendingUp, CheckCircle2 } from "lucide-react"
+import { ExternalLink, Calendar, User, Users, Github, Network, BookOpen, TrendingUp, CheckCircle2 } from "lucide-react"
 import Image, { StaticImageData } from "next/image"
-import { TroubleshootingDialog, TroubleshootingLog } from "./troubleshooting-dialog"
 import { Progress } from "./ui/progress"
 
 export interface TeamMember {
@@ -337,27 +336,6 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
 
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {/* Section 3: 트러블슈팅 바 (Bottom 1) */}
-            {project.troubleshooting && (
-              <div className="space-y-3">
-                <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-zinc-800 p-2 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-zinc-300" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white text-[14px] flex items-center gap-2">
-                        트러블슈팅 로그
-                        <Badge variant="outline" className="text-[10px] bg-zinc-950 border-zinc-700 text-zinc-400 px-1.5 h-4">Technical Deep Dive</Badge>
-                      </h4>
-                      <p className="text-[12px] text-zinc-400 mt-0.5">{project.troubleshooting.title}</p>
-                    </div>
-                  </div>
-                  <TroubleshootingDialog log={project.troubleshooting} />
                 </div>
               </div>
             )}
