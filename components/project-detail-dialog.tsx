@@ -290,13 +290,13 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                             <h5 className="text-[12px] font-bold text-red-400 flex items-center gap-1.5">
                               <span className="bg-red-950 px-1.5 py-0.5 rounded text-red-400">🚨</span> 문제 상황
                             </h5>
-                            <p className="text-[13px] text-zinc-400 leading-relaxed">{ps.problem}</p>
+                            <p className="text-[13px] text-zinc-400 leading-relaxed whitespace-pre-line break-keep">{ps.problem}</p>
                           </div>
                           <div className="space-y-2">
                             <h5 className="text-[12px] font-bold text-orange-400 flex items-center gap-1.5">
                               <span className="bg-orange-950 px-1.5 py-0.5 rounded text-orange-400">🔎</span> 원인 분석
                             </h5>
-                            <p className="text-[13px] text-zinc-400 leading-relaxed">{ps.cause}</p>
+                            <p className="text-[13px] text-zinc-400 leading-relaxed whitespace-pre-line break-keep">{ps.cause}</p>
                           </div>
                         </div>
 
@@ -304,14 +304,14 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                           <h5 className="text-[12px] font-bold text-blue-400 flex items-center gap-1.5">
                             <span className="bg-blue-900 px-1.5 py-0.5 rounded text-blue-300">💡</span> 해결 방법
                           </h5>
-                          <p className="text-[13px] text-zinc-300 leading-relaxed font-medium">{ps.solution}</p>
+                          <p className="text-[13px] text-zinc-300 leading-relaxed font-medium whitespace-pre-line break-keep">{ps.solution}</p>
                         </div>
 
                         <div className="bg-green-950/20 border border-green-900/50 p-4 rounded-lg space-y-2">
                           <h5 className="text-[12px] font-bold text-green-400 flex items-center gap-1.5">
                             <span className="bg-green-900 px-1.5 py-0.5 rounded text-green-300">🏆</span> 결과 및 성과
                           </h5>
-                          <p className="text-[13px] text-zinc-300 leading-relaxed font-medium">{ps.result}</p>
+                          <p className="text-[13px] text-zinc-300 leading-relaxed font-medium whitespace-pre-line break-keep">{ps.result}</p>
                         </div>
                       </div>
 

@@ -39,17 +39,17 @@ export const PROJECTS = [
     problemSolving: [
       {
         title: "예산 오차 및 엉뚱한 상품 매핑 정확도 한계 극복",
-        problem: "AI 생성 식단의 재료비가 예산을 크게 초과하고, 단순 키워드 검색 시 묶음/대용량 등 엉뚱한 상품이 매핑되는 문제 발생",
-        cause: "API가 시장 단가를 몰라 예산 제어가 불가했고, 11번가 검색 시 수량/단위 텍스트가 혼재되어 매핑 노이즈 발생",
-        solution: "Greedy 알고리즘 기반 예산 초과분 내림차순 필터링 적용 및 IngredientQueryNormalizer로 검색어 정규화(수량/단위 제거)",
-        result: "사용자 예산 ±15% 이내로 재료비 제어 성공 및 엉뚱한 상품 노출 방지로 장보기 리스트 품질 대폭 향상"
+        problem: "AI 생성 식단의 재료비가 예산을 크게 초과하고,\n단순 키워드 검색 시 묶음/대용량 등 엉뚱한 상품이 매핑되는 문제 발생",
+        cause: "API가 시장 단가를 몰라 예산 제어가 불가했고,\n11번가 검색 시 수량/단위 텍스트가 혼재되어 매핑 노이즈 발생",
+        solution: "Greedy 알고리즘 기반 예산 초과분 내림차순 필터링 적용\nIngredientQueryNormalizer로 검색어 정규화(수량/단위 제거)",
+        result: "사용자 예산 ±15% 이내로 재료비 제어 성공\n엉뚱한 상품 노출 방지로 장보기 리스트 품질 대폭 향상"
       },
       {
         title: "AI API의 8~10초 응답 지연으로 인한 타임아웃 해결",
-        problem: "외부 AI API가 식단 생성에 8~10초 소요되어, 브라우저 타임아웃 및 서비스 이탈 발생",
-        cause: "식단 생성 요청이 동기적으로 처리되어 스레드가 블로킹되고 클라이언트가 대기 상태에 빠짐",
-        solution: "@Async + CompletableFuture 기반 비동기 파이프라인 전환 및 프론트엔드 폴링(1초 간격) 구조 적용",
-        result: "응답 시간 80% 개선(즉시 응답 반환) 및 타임아웃 에러율 0% 달성으로 사용자 경험 보장"
+        problem: "외부 AI API가 식단 생성에 8~10초 소요되어,\n브라우저 타임아웃 및 서비스 이탈 발생",
+        cause: "식단 생성 요청이 동기적으로 처리되어 스레드가 블로킹되고\n클라이언트가 대기 상태에 빠짐",
+        solution: "@Async + CompletableFuture 기반 비동기 파이프라인 전환\n프론트엔드 폴링(1초 간격) 구조 적용",
+        result: "응답 시간 80% 개선(즉시 응답 반환)\n타임아웃 에러율 0% 달성으로 사용자 경험 보장"
       }
     ],
     situation:
@@ -225,10 +225,10 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     problemSolving: [
       {
         title: "MySQL Haversine 위치 검색 성능 한계 및 DB 부하 극복",
-        problem: "MySQL에서 Haversine 공식으로 사용자 주변 매장 검색 시 O(N) 풀스캔이 발생하여 응답 속도 저하",
-        cause: "매 요청마다 삼각함수 연산을 수행하고 인덱스 활용이 불가하여 매장 수 증가 시 DB 부하 급증",
-        solution: "위치 데이터를 Redis GEO 인메모리 캐시 계층으로 분리하고, Pipeline을 활용해 브랜드명 일괄 조회 적용",
-        result: "반경 내 매장만 조회하여 거리 연산 부하를 제거하고 검색 속도 및 확장성 대폭 개선"
+        problem: "MySQL에서 Haversine 공식으로 사용자 주변 매장 검색 시\nO(N) 풀스캔이 발생하여 응답 속도 저하",
+        cause: "매 요청마다 삼각함수 연산을 수행하고 인덱스 활용이 불가하여\n매장 수 증가 시 DB 부하 급증",
+        solution: "위치 데이터를 Redis GEO 인메모리 캐시 계층으로 분리하고,\nPipeline을 활용해 브랜드명 일괄 조회 적용",
+        result: "반경 내 매장만 조회하여 거리 연산 부하를 완전 제거\n검색 속도 및 인프라 확장성 대폭 개선"
       }
     ],
     situation:
@@ -397,10 +397,10 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     problemSolving: [
       {
         title: "배포 후 Nginx 301 리다이렉트로 인한 HTTP POST 소실 문제 해결",
-        problem: "운영 서버 배포 후 '모임방 생성(POST)' API 요청 시 Payload(Body)가 소실되고 405 Method Not Allowed 오류 발생",
-        cause: "Nginx HTTPS 강제 전환 시 301 Redirect를 사용하여 클라이언트가 재요청 시 POST를 GET으로 강제 변환하는 HTTP 스펙 종속성 발생",
-        solution: "Nginx 프록시 설정에서 308 Permanent Redirect로 상태 코드를 전면 교체하여 기존 HTTP 메서드와 Body 데이터 유지 강제",
-        result: "HTTP 메서드 변환 없이 네트워크 프록시 환경에서 정상 동작 보장 및 서비스 장애 해결"
+        problem: "운영 서버 배포 후 '모임방 생성(POST)' API 요청 시\nPayload(Body)가 소실되고 405 Method Not Allowed 오류 발생",
+        cause: "Nginx HTTPS 강제 전환 시 301 Redirect를 사용하여\n클라이언트가 재요청 시 POST를 GET으로 강제 변환하는 HTTP 스펙 종속성 발생",
+        solution: "Nginx 프록시 설정에서 308 Permanent Redirect로 상태 코드를 전면 교체하여\n기존 HTTP 메서드와 Body 데이터 유지 강제",
+        result: "HTTP 메서드 변환 없이 네트워크 프록시 환경에서 정상 동작 보장\n기존 POST 스펙을 유지하며 서비스 장애 완벽 해결"
       }
     ],
     situation:
