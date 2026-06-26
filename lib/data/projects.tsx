@@ -59,6 +59,11 @@ export const PROJECTS = [
     image: project1,
     architectureImage: project1Arch,
     githubLink: "https://github.com/ryubyeongsun/diet_coach_PJ",
+    techReasons: [
+      { label: "MyBatis", desc: "JPA 대신 동적 SQL과 resultMap을 활용하여 실사용 흐름에 맞는 복잡한 조건 쿼리를 직접 제어하기 위해 선택했습니다." },
+      { label: "JWT RTR", desc: "일반 JWT 대신 Refresh Token 사용 시마다 토큰을 즉각 폐기/무효화하여 탈취 및 악용을 구조적으로 차단했습니다." },
+      { label: "@Async", desc: "전체 WebFlux 전환 비용을 피하면서도 기존 Spring MVC 구조 내에서 AI API 대기 스레드 블로킹 문제를 효율적으로 해결했습니다." }
+    ],
     troubleshooting: {
       title: "AI 식단 파이프라인 지연 및 커머스 연동 정합성 문제 해결",
       date: "2025-12",
@@ -218,6 +223,11 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     image: project2,
     architectureImage: project2Arch,
     githubLink: "https://github.com/ryubyeongsun/cony-gifticon-platform",
+    techReasons: [
+      { label: "JPA 비관적 락 (PESSIMISTIC_WRITE)", desc: "낙관적 락의 재시도 로직 한계를 피하고 '단 한 건의 중복 결제도 허용하지 않는' 금융 거래 무결성을 위해 DB 레벨의 순차 처리를 강제했습니다." },
+      { label: "Redis GEO & Pipeline", desc: "MySQL Haversine 삼각함수 풀스캔의 O(N) 연산 한계를 극복하고, 반경 조회와 일괄 조회로 네트워크 왕복을 최소화했습니다." },
+      { label: "Spring Scheduler", desc: "별도의 무거운 배치 프레임워크 도입 없이, 예약 판매 및 만료 처리를 경량으로 스케줄링하여 운영을 자동화했습니다." }
+    ],
     troubleshooting: {
       title: "동시 구매 중복 거래 방지 및 위치 검색 성능 최적화",
       date: "2026-02",
@@ -376,6 +386,11 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     },
     image: project3,
     architectureImage: project3Arch,
+    techReasons: [
+      { label: "Docker Compose & Jenkins", desc: "5개의 MSA 서비스 배포 복잡도를 해결하고, CI/CD 자동화를 통해 수동 배포로 인한 휴먼 에러를 제거했습니다." },
+      { label: "Spring Cloud Gateway", desc: "각 마이크로서비스마다 중복되는 인증 로직을 전역 필터(JWT)로 중앙 제어하여 단일 진입점을 확보했습니다." },
+      { label: "Kafka Event Broker", desc: "결제와 리포트 도메인 간의 동기 통신으로 인한 장애 연쇄를 방지하고, 큐 분리를 통해 서비스 간 강결합을 끊어냈습니다." }
+    ],
     troubleshooting: {
       title:
         "Nginx 301 리다이렉트로 POST 요청이 GET으로 바뀌며 모임방 생성이 실패한 문제 해결",
