@@ -252,15 +252,22 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                 {/* Right: 개인 기여도 프로그레스 바 */}
                 {project.contribution?.details && (
                   <div className="flex-1 space-y-3">
-                    <h3 className="text-lg font-bold text-white">개인 기여도 분석</h3>
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      개인 기여도 분석
+                      <Badge variant="outline" className="text-[11px] bg-blue-950/30 border-blue-900 text-blue-400 px-2 h-5">
+                        전체 기여도 : {project.contribution.percentage}
+                      </Badge>
+                    </h3>
                     <div className="p-6 rounded-xl border border-zinc-800 bg-[#111111] space-y-6">
                       {project.contribution.details.map((detail, i) => (
                         <div key={i} className="space-y-2">
-                          <div className="flex justify-between text-[13px] font-medium text-zinc-200">
-                            <span>{detail.title}</span>
-                            <span className="text-blue-400">{detail.percentage}%</span>
+                          <div className="flex justify-between items-center text-[13px] font-medium text-zinc-200">
+                            <span className="flex items-center gap-2">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
+                              {detail.title}
+                            </span>
                           </div>
-                          <Progress value={detail.percentage} className="h-1.5 bg-zinc-800 [&>div]:bg-blue-600" />
+                          <Progress value={100} className="h-1 bg-zinc-800 [&>div]:bg-blue-600/70" />
                           <p className="text-[11px] text-zinc-500 mt-1">{detail.description}</p>
                         </div>
                       ))}
