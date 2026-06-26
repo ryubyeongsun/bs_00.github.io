@@ -78,18 +78,20 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                   </div>
                 </div>
 
-                {/* Right: Before/After 이미지 플레이스홀더 */}
-                <div className="xl:w-[450px] shrink-0 border border-zinc-800 border-dashed rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center min-h-[300px] p-6 text-center">
-                  <Image
-                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%2352525b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E"
-                    width={48}
-                    height={48}
-                    alt="placeholder"
-                    className="mb-4 opacity-50"
-                  />
-                  <p className="text-zinc-500 text-[13px] font-medium mb-1">Before / After 비교 이미지 영역</p>
-                  <p className="text-zinc-600 text-[11px]">이 영역에 나중에 개선 전후 이미지가 삽입됩니다.</p>
-                </div>
+                {/* Right: Before/After 이미지 플레이스홀더 (옵션) */}
+                {ps.imagePlaceholder !== false && (
+                  <div className="xl:w-[450px] shrink-0 border border-zinc-800 border-dashed rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center min-h-[300px] p-6 text-center">
+                    <Image
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%2352525b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E"
+                      width={48}
+                      height={48}
+                      alt="placeholder"
+                      className="mb-4 opacity-50"
+                    />
+                    <p className="text-zinc-500 text-[13px] font-medium mb-1">Before / After 비교 이미지 영역</p>
+                    <p className="text-zinc-600 text-[11px]">이 영역에 나중에 개선 전후 이미지가 삽입됩니다.</p>
+                  </div>
+                )}
 
               </div>
             ))}
