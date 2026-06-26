@@ -25,15 +25,17 @@ export const PROJECTS = [
     ],
     contribution: {
       percentage: "50%",
-      summary: "백엔드 전체 단독 설계 (BE 1인, 4주)",
+      summary: "백엔드 전체 아키텍처 설계, AI 파이프라인 최적화, 배포 및 인프라 구축",
       details: [
-        "TDEE 기반 AI 맞춤 식단 생성 API 전체 설계 및 구현",
-        "Spring @Async + CompletableFuture 비동기 파이프라인 설계",
-        "JWT RTR(Refresh Token Rotation) 인증 시스템 구축",
-        "11번가 API 연동 장보기 기능 구현 및 Mock Fallback 설계",
-        "MyBatis 동적 SQL 기반 복잡 조건 식단 조회 쿼리 작성",
+        { title: "AI 식단 자동 생성 API", percentage: 30, description: "TDEE 기반 목표별 식단 데이터 계산 및 비동기 처리" },
+        { title: "11번가 장보기 API 연동", percentage: 10, description: "식재료 키워드 정규화 및 Mock Fallback 적용" },
+        { title: "예산 필터링 알고리즘", percentage: 10, description: "추정 단가 기반 내림차순 정렬을 통한 예산 초과 제어" }
       ],
     },
+    teamComposition: [
+      { role: "프론트엔드", count: 1, isMe: false, tasks: "Vue.js 모바일 UI/UX, Three.js 3D 체형 시각화" },
+      { role: "백엔드 (본인)", count: 1, isMe: true, tasks: "AI 식단 생성 API, 장보기 연동, 예산 필터링, 인프라 구축" }
+    ],
     situation:
       "운동과 식단 관리를 병행하려는 사용자들이 과학적 근거(TDEE)에 기반한 맞춤 식단을 추천받기 어려운 문제가 있었습니다. 기존 식단 앱은 단순 칼로리 계산에 그쳐, 개인별 대사량을 반영한 영양소 최적화와 체형 변화의 시각적 피드백이 부족했습니다.",
     task: "사용자의 신체 정보를 기반으로 Harris-Benedict 공식으로 TDEE를 분석하고, AI가 30일분 맞춤 식단을 자동 생성하는 백엔드 시스템을 구축해야 했습니다. 특히 외부 AI API의 응답 지연(8~10초) 문제를 해결하여 사용자 경험을 보장하는 것이 핵심 과제였습니다.",
@@ -189,16 +191,21 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
       "AWS S3",
     ],
     contribution: {
-      percentage: "33%",
-      summary: "거래 시스템, 결제 연동, 배치 자동화 및 위치 검색 핵심 전담",
+      percentage: "25%",
+      summary: "결제 트랜잭션 동시성 제어 및 위치 기반 성능 최적화",
       details: [
-        "거래 프로세스 전체 설계 및 구현 (구매 검증 → 결제 → 소유권 이전)",
-        "PESSIMISTIC_WRITE 비관적 락 적용으로 동시 구매 Race Condition 차단",
-        "Redis GEO + Pipeline 기반 위치 검색 API 구현 (반경/거리순)",
-        "Spring Scheduler 배치 설계 (만료 삭제, 예약 판매 생성, 상태 전환 자동화)",
-        "카카오페이 연동 포인트 충전 API 구현",
+        { title: "PESSIMISTIC_WRITE 비관적 락", percentage: 10, description: "동시 구매 결제 시 데이터 정합성 보장 및 중복 거래 차단" },
+        { title: "거래 프로세스 원자적 설계", percentage: 10, description: "본인 검증, 잔액 확인, 소유권 이전을 하나의 트랜잭션으로 통합" },
+        { title: "Redis GEO 반경 검색 API", percentage: 5, description: "Haversine 공식 의존성 탈피, 인메모리 반경 검색 구현" }
       ],
     },
+    teamComposition: [
+      { role: "프론트엔드", count: 2, isMe: false, tasks: "React Native 모바일 UI/UX 설계 및 화면 구현" },
+      { role: "백엔드", count: 1, isMe: false, tasks: "기프티콘 관리 핵심 API, 공유방, 알림" },
+      { role: "백엔드 (본인)", count: 1, isMe: true, tasks: "거래 시스템 검증, 배치 스케줄러, 위치 검색 최적화" },
+      { role: "인프라", count: 1, isMe: false, tasks: "CI/CD 배포 파이프라인, AWS EC2 구성" },
+      { role: "AI", count: 1, isMe: false, tasks: "OCR 이미지 텍스트 추출 자동화 모델" }
+    ],
     situation:
       "기프티콘 유효기간 만료로 인한 낙전 금액이 연간 수백억 원에 달합니다. 기존 서비스는 수동 등록이 번거롭고, 사용 가능한 매장을 찾기 어려우며, 유효기간 관리가 되지 않아 사용률이 낮았습니다. 특히 인기 상품에 여러 사용자가 동시에 구매를 시도하면 중복 거래가 발생할 위험이 있었습니다.",
     task: "거래 중복 방지를 위한 동시성 제어, 자동 판매 등록 배치, 거리순 검색 성능을 안정적으로 구현하는 것이 목표였습니다. 동시성 제어를 통해 데이터 정합성을 보장하고, 위치 기반 검색의 성능을 최적화하며, 스케줄링을 통한 운영 자동화 시스템을 구축해야 했습니다.",
@@ -349,17 +356,19 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
       "Grafana",
     ],
     contribution: {
-      percentage: "40%",
-      summary: "Infra 1인 전담 (MSA 배포 환경 구축 + 인증 시스템 구현)",
+      percentage: "15%",
+      summary: "MSA 인프라 구축, 배포 자동화, 게이트웨이 인증 통합",
       details: [
-        "Docker Compose 기반 MSA 5개 서비스 + Redis + Kafka 컨테이너 배포 환경 전체 구성",
-        "Jenkins CI/CD 파이프라인 구축 (develop/release 브랜치별 분리)",
-        "Nginx HTTPS 리버스 프록시 + TLS 설정 및 경로별 프록시 정책 분리",
-        "카카오 OAuth + JWT Access/Refresh Token 인증 흐름 구현",
-        "Prometheus + Grafana 모니터링 대시보드 구축",
-        "Kafka 누락, RDS 스키마 부재, KST/UTC 시간대 차이 등 운영 이슈 해결",
+        { title: "Docker Compose MSA 배포", percentage: 5, description: "5개 마이크로서비스 및 Kafka, Redis 통합 런타임 환경 구성" },
+        { title: "Spring Cloud Gateway JWT", percentage: 5, description: "라우팅 단일 진입점에서 토큰 검증 및 인가 처리" },
+        { title: "Jenkins CI/CD 자동화", percentage: 5, description: "브랜치별(develop/release) 배포 환경 분리 및 자동화" }
       ],
     },
+    teamComposition: [
+      { role: "프론트엔드", count: 1, isMe: false, tasks: "React Native 클라이언트 화면 구성 및 상태 관리" },
+      { role: "백엔드 (풀스택)", count: 4, isMe: false, tasks: "모임 정산, 결제 내역 등록, 소비 리포트 로직 개발" },
+      { role: "인프라 / 백엔드 (본인)", count: 1, isMe: true, tasks: "MSA 인프라 전체 구성, Gateway 인증 통합, CI/CD" }
+    ],
     situation:
       "친구/동료 모임에서 공동 결제 후 정산이 번거로운 사용자를 위해, 모임방 생성부터 정산/송금, 소비 리포트까지 한 흐름으로 제공하는 모바일 더치페이 서비스입니다. 프로젝트 후반에는 단순히 기능 구현을 넘어 실제 운영 환경에서 안정적으로 배포되고 동작하는 구조가 필요했고, 인증 흐름과 외부 연동, 프록시, 메시징, 모니터링까지 여러 계층의 문제가 동시에 드러났습니다.",
     task: "인프라 담당으로서 EC2 기반 운영 환경에 MSA 서비스를 안정적으로 배포하고, CI/CD와 모니터링 체계를 구축해야 했습니다. 백엔드에서는 카카오 OAuth 로그인, JWT 토큰 관리, Redis 기반 세션 관리를 구현하고, 운영 환경에서 발생하는 인증/리다이렉트/시간대 이슈를 빠르게 해결하는 것이 핵심 과제였습니다.",

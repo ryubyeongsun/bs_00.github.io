@@ -10,14 +10,28 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Calendar, User, Users, Github, CheckCircle2, AlertTriangle, Lightbulb, Quote, Network } from "lucide-react"
+import { ExternalLink, Calendar, User, Users, Github, Network, BookOpen, AlertCircle, TrendingUp, CheckCircle2 } from "lucide-react"
 import Image, { StaticImageData } from "next/image"
 import { TroubleshootingDialog, TroubleshootingLog } from "./troubleshooting-dialog"
+import { Progress } from "./ui/progress"
+
+export interface TeamMember {
+  role: string
+  count: number
+  isMe?: boolean
+  tasks: string
+}
+
+export interface ContributionDetail {
+  title: string
+  percentage: number
+  description: string
+}
 
 export interface ProjectContribution {
   percentage: string
   summary: string
-  details: string[]
+  details: ContributionDetail[]
 }
 
 export interface ProjectRetrospective {
@@ -32,6 +46,7 @@ export interface Project {
   description: string
   period: string
   team?: string
+  teamComposition?: TeamMember[]
   role: string
   techStack: string[]
   contribution?: ProjectContribution
@@ -109,79 +124,78 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-8 pb-8">
+        <div className="flex-1 overflow-y-auto p-6 bg-[#0a0a0a] text-zinc-300">
+          <div className="space-y-12 pb-8 max-w-[1400px] mx-auto">
 
-            <div className="flex flex-col xl:flex-row gap-8">
+            {/* Section 1: 프로젝트 미리보기 & 상세 (Top) */}
+            <div className="flex flex-col xl:flex-row gap-6">
+              {/* Left: 썸네일 */}
               {(project.architecture || project.image) && (
-                <div className="xl:w-[360px] shrink-0 space-y-3">
-                  <h3 className="text-lg font-semibold">
-                    {project.architecture ? "시스템 아키텍처" : "프로젝트 미리보기"}
-                  </h3>
-                  <div className="rounded-lg border bg-muted/50 overflow-hidden">
+                <div className="xl:w-[450px] shrink-0 space-y-3">
+                  <h3 className="text-lg font-bold text-white mb-2">프로젝트 미리보기</h3>
+                  <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden shadow-xl">
                     <Image
                       src={project.architecture || project.image!}
                       alt={project.title}
                       width={0}
                       height={0}
                       sizes="100vw"
-                      className="w-full h-auto object-contain"
+                      className="w-full h-auto object-cover"
                     />
                   </div>
+                  {project.architectureImage && (
+                    <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden shadow-xl mt-4">
+                      <img
+                        src={typeof project.architectureImage === "string" ? project.architectureImage : project.architectureImage.src}
+                        alt={`${project.title} Architecture`}
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 
-              <div className="flex-1 space-y-4">
-                <h3 className="text-lg font-semibold">프로젝트 상세</h3>
+              {/* Right: 3단 박스 (Overview, Role, Tech Stack) */}
+              <div className="flex-1 space-y-3">
+                <h3 className="text-lg font-bold text-white mb-2">프로젝트 상세</h3>
 
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                   {/* Overview */}
-                  <div className="p-5 rounded-xl border bg-card text-card-foreground shadow-sm">
-                    <h4 className="font-bold mb-3 flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs">Overview</Badge>
+                  <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111] shadow-sm">
+                    <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                      <Badge className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800 border-none text-xs rounded-sm px-2">Overview</Badge>
                       프로젝트 개요 및 목표
                     </h4>
-                    <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/90">
+                    <p className="text-[13px] leading-relaxed whitespace-pre-line text-zinc-400">
                       {project.situation}{"\n\n"}{project.task}
                     </p>
                   </div>
 
                   {/* Role & Contribution */}
                   {project.contribution && (
-                    <div className="p-5 rounded-xl border bg-card text-card-foreground shadow-sm">
-                      <h4 className="font-bold mb-3 flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs">Role & Contribution</Badge>
+                    <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111] shadow-sm">
+                      <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                        <Badge className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800 border-none text-xs rounded-sm px-2">Role & Contribution</Badge>
                         담당 역할 및 기여도
-                        <Badge variant="outline" className="ml-auto text-xs font-normal bg-muted">
-                          기여도 {project.contribution.percentage}
-                        </Badge>
                       </h4>
-                      <p className="text-sm font-medium text-foreground/90 mb-3">
+                      <p className="text-[13px] font-medium text-zinc-300">
                         {project.contribution.summary}
                       </p>
-                      <ul className="space-y-2">
-                        {project.contribution.details.map((detail, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                            {detail}
-                          </li>
-                        ))}
-                      </ul>
                     </div>
                   )}
 
                   {/* Tech Stack */}
                   {project.techReasons && (
-                    <div className="p-5 rounded-xl border bg-card text-card-foreground shadow-sm">
-                      <h4 className="font-bold mb-3 flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs">Tech Stack</Badge>
+                    <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111] shadow-sm">
+                      <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                        <Badge className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800 border-none text-xs rounded-sm px-2">Tech Stack</Badge>
                         사용 기술 및 도입 이유
                       </h4>
-                      <ul className="space-y-3">
+                      <ul className="space-y-2">
                         {project.techReasons.map((tech, i) => (
-                          <li key={i} className="text-sm">
-                            <span className="font-bold text-foreground/90 mr-2">{tech.label}:</span>
-                            <span className="text-foreground/80 leading-relaxed">{tech.desc}</span>
+                          <li key={i} className="text-[13px]">
+                            <span className="font-bold text-zinc-200 mr-2">{tech.label}:</span>
+                            <span className="text-zinc-400 leading-relaxed">{tech.desc}</span>
                           </li>
                         ))}
                       </ul>
@@ -191,85 +205,124 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
               </div>
             </div>
 
-            {/* System Architecture */}
-            {project.architectureImage && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Network className="w-5 h-5 text-indigo-500" />
-                  시스템 아키텍처 (System Architecture)
-                </h3>
-                <div className="bg-muted/50 rounded-xl p-4 border flex justify-center">
-                  <img
-                    src={typeof project.architectureImage === "string" ? project.architectureImage : project.architectureImage.src}
-                    alt={`${project.title} Architecture`}
-                    className="max-w-full rounded-lg shadow-sm"
-                  />
-                </div>
+            {/* Section 2: 팀 구성 & 기여도 분석 (Middle) */}
+            {(project.teamComposition || project.contribution?.details) && (
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* Left: 팀 구성 테이블 */}
+                {project.teamComposition && (
+                  <div className="flex-1 space-y-3">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      팀 구성 <Badge variant="outline" className="text-xs bg-zinc-900 border-zinc-700 text-zinc-400">총 {project.teamComposition.reduce((acc, cur) => acc + cur.count, 0)}인</Badge>
+                    </h3>
+                    <div className="rounded-xl border border-zinc-800 bg-[#111111] overflow-hidden">
+                      <table className="w-full text-[13px] text-left">
+                        <thead className="bg-zinc-900 text-zinc-400">
+                          <tr>
+                            <th className="px-5 py-3 font-medium w-1/4">역할</th>
+                            <th className="px-5 py-3 font-medium w-[15%] text-center">인원</th>
+                            <th className="px-5 py-3 font-medium">담당 업무</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-800">
+                          {project.teamComposition.map((member, i) => (
+                            <tr key={i} className={member.isMe ? "bg-blue-950/20" : ""}>
+                              <td className="px-5 py-4 font-medium text-zinc-300">
+                                {member.role} {member.isMe && <Badge className="ml-1 bg-blue-600 hover:bg-blue-600 text-[10px] px-1.5 py-0 h-4">본인</Badge>}
+                              </td>
+                              <td className="px-5 py-4 text-center text-zinc-400">{member.count}명</td>
+                              <td className="px-5 py-4 text-zinc-400">{member.tasks}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Right: 개인 기여도 프로그레스 바 */}
+                {project.contribution?.details && (
+                  <div className="flex-1 space-y-3">
+                    <h3 className="text-lg font-bold text-white">개인 기여도 분석</h3>
+                    <div className="p-6 rounded-xl border border-zinc-800 bg-[#111111] space-y-6">
+                      {project.contribution.details.map((detail, i) => (
+                        <div key={i} className="space-y-2">
+                          <div className="flex justify-between text-[13px] font-medium text-zinc-200">
+                            <span>{detail.title}</span>
+                            <span className="text-blue-400">{detail.percentage}%</span>
+                          </div>
+                          <Progress value={detail.percentage} className="h-1.5 bg-zinc-800 [&>div]:bg-blue-600" />
+                          <p className="text-[11px] text-zinc-500 mt-1">{detail.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
+            {/* Section 3: 트러블슈팅 바 (Bottom 1) */}
             {project.troubleshooting && (
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  트러블슈팅 로그
-                  <Badge variant="outline" className="text-xs font-normal">Technical Deep Dive</Badge>
-                </h3>
-                <div className="border rounded-xl p-1 bg-muted/30">
-                  <div className="p-4 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-sm">{project.troubleshooting.title}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {project.troubleshooting.date} • {project.troubleshooting.environment}
-                      </p>
+                <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-zinc-800 p-2 rounded-lg">
+                      <AlertCircle className="w-5 h-5 text-zinc-300" />
                     </div>
-                    <TroubleshootingDialog log={project.troubleshooting} />
+                    <div>
+                      <h4 className="font-bold text-white text-[14px] flex items-center gap-2">
+                        트러블슈팅 로그
+                        <Badge variant="outline" className="text-[10px] bg-zinc-950 border-zinc-700 text-zinc-400 px-1.5 h-4">Technical Deep Dive</Badge>
+                      </h4>
+                      <p className="text-[12px] text-zinc-400 mt-0.5">{project.troubleshooting.title}</p>
+                    </div>
                   </div>
+                  <TroubleshootingDialog log={project.troubleshooting} />
                 </div>
               </div>
             )}
 
-            {/* 회고 영역 */}
+            {/* Section 4: 프로젝트 회고 3분할 (Bottom 2) */}
             {project.retrospective && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">성과 회고</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="p-4 rounded-xl border border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/30">
-                    <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-orange-700 dark:text-orange-300">
-                      <AlertTriangle className="h-4 w-4" />
-                      아쉬운 점 / 기술적 한계
-                    </h4>
-                    <ul className="space-y-1.5">
-                      {project.retrospective.regrets.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-orange-400 shrink-0" />
-                          {item}
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-indigo-400" />
+                  프로젝트 회고 <Badge variant="outline" className="text-[10px] bg-zinc-950 border-zinc-700 text-zinc-400 px-1.5 h-4">Retrospective</Badge>
+                </h3>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {/* 아쉬웠던 부분 */}
+                  <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111]">
+                    <h4 className="font-bold text-zinc-200 text-[13px] mb-3">아쉬웠던 부분</h4>
+                    <ul className="space-y-2">
+                      {project.retrospective.regrets.map((regret, i) => (
+                        <li key={i} className="flex gap-2 text-[12px] text-zinc-400 leading-relaxed">
+                          <span className="text-red-500 font-bold">X</span>
+                          <span>{regret}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30">
-                    <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
-                      <Lightbulb className="h-4 w-4" />
-                      개선 방안
-                    </h4>
-                    <ul className="space-y-1.5">
-                      {project.retrospective.improvements.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                          {item}
+
+                  {/* 개선 방안 */}
+                  <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111]">
+                    <h4 className="font-bold text-zinc-200 text-[13px] mb-3">개선 방안</h4>
+                    <ul className="space-y-2">
+                      {project.retrospective.improvements.map((imp, i) => (
+                        <li key={i} className="flex gap-2 text-[12px] text-zinc-400 leading-relaxed">
+                          <span className="text-blue-400 font-bold">→</span>
+                          <span>{imp}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-                </div>
-                <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
-                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                    <Quote className="h-4 w-4" />
-                    기술적 깨달음
-                  </h4>
-                  <p className="text-sm text-foreground/80 leading-relaxed italic">
-                    {project.retrospective.lesson}
-                  </p>
+
+                  {/* 학습 결과 */}
+                  <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111]">
+                    <h4 className="font-bold text-zinc-200 text-[13px] mb-3">학습 결과</h4>
+                    <p className="flex gap-2 text-[12px] text-zinc-400 leading-relaxed">
+                      <span className="text-green-500 font-bold">✓</span>
+                      <span>{project.retrospective.lesson}</span>
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
