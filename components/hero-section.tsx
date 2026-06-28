@@ -50,8 +50,19 @@ export default function HeroSection() {
           >
             <a href="/portfolio.pdf" target="_blank" rel="noopener noreferrer">
               <Download className="mr-2 h-5 w-5" />
-              Download PDF
+              포트폴리오 PDF
             </a>
+          </Button>
+
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-12 px-8 text-base border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-300 hover:border-emerald-300 transition-all hover:scale-105 backdrop-blur-sm"
+            onClick={() => {
+              document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })
+            }}
+          >
+            Why me?
           </Button>
 
           <Button
