@@ -28,18 +28,19 @@ export default function HeroSection() {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-extrabold mb-8 text-white tracking-tight leading-tight [word-break:keep-all] animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-          신뢰를 설계하는 <br className="hidden md:block" />
-          백엔드 엔지니어,{" "}
+          빠르게 만들되, <br className="hidden md:block" />
+          끝까지 검증하는 백엔드 개발자{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
             류병선
           </span>
+          입니다.
         </h1>
 
-        <p className="text-xl md:text-2xl text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto [word-break:keep-all] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-          Java 웹 개발의 기본기부터 대용량 분산 시스템 설계까지.
-          <br className="hidden md:block" />
-          견고하고 확장 가능한 솔루션을 구축합니다.
-        </p>
+        <div className="flex items-center justify-center gap-6 text-slate-400 mb-10 text-lg animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+          <span className="flex items-center gap-2"><span className="text-emerald-400">📱</span> 010-5564-3135</span>
+          <span className="text-slate-600">|</span>
+          <span className="flex items-center gap-2"><span className="text-emerald-400">✉️</span> abcfg89@naver.com</span>
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
           <Button

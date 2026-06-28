@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CalendarDays, MapPin, GraduationCap, Mail, Github } from "lucide-react"
+import { CalendarDays, MapPin, GraduationCap, Mail, Github, Search, MessageCircle, FileEdit, Star } from "lucide-react"
 import Image from "next/image"
 import profileImg from "@/public/profile.jpg"
 
@@ -61,21 +61,57 @@ export default function AboutSection() {
 
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <h2 className="text-3xl font-bold text-foreground">About Me</h2>
-                <div className="h-1.5 flex-1 bg-gradient-to-r from-primary/50 to-transparent rounded-full" />
+                <h2 className="text-3xl font-bold text-foreground">Why me?</h2>
+                <div className="h-1.5 flex-1 bg-gradient-to-r from-emerald-500/50 to-transparent rounded-full" />
               </div>
 
-              <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 leading-relaxed space-y-4">
-                <p>
-                  안녕하세요, <strong className="text-foreground">신뢰할 수 있는 백엔드 시스템</strong>을 설계하는 개발자 류병선입니다.
-                </p>
-                <p>
-                  단순히 기능이 동작하는 것을 넘어, <span className="bg-primary/10 text-primary px-1 rounded">데이터 무결성</span>과 <span className="bg-primary/10 text-primary px-1 rounded">시스템 안정성</span>을 최우선으로 고려합니다.
-                  Java와 Spring Boot를 주력으로 사용하며, 대용량 트래픽 처리를 위한 아키텍처 설계에 깊은 관심을 가지고 있습니다.
-                </p>
-                <p>
-                  비즈니스 요구사항을 명확히 분석하고, 이를 기술적으로 풀어내는 과정에서 즐거움을 느낍니다.
-                  팀원들과의 원활한 소통을 중요하게 생각하며, 함께 성장하는 개발 문화를 지향합니다.
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                <Card className="p-6 border-slate-200 dark:border-zinc-800 bg-card hover:border-emerald-500/50 transition-all shadow-sm group">
+                  <div className="flex flex-col h-full relative">
+                    <Search className="absolute top-0 right-0 w-8 h-8 text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors" />
+                    <div className="flex flex-col gap-4 mb-4">
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-500/20">1</div>
+                      <h4 className="font-bold text-base leading-tight break-keep">"왜?"를 먼저 묻는 습관</h4>
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 break-keep leading-relaxed flex-grow">
+                      기술을 선택할 때 "왜 이것이어야 하는지, 대안은 없는지"를 항상 먼저 비교하고 결정합니다.
+                    </p>
+                  </div>
+                </Card>
+
+                <Card className="p-6 border-slate-200 dark:border-zinc-800 bg-card hover:border-emerald-500/50 transition-all shadow-sm group">
+                  <div className="flex flex-col h-full relative">
+                    <MessageCircle className="absolute top-0 right-0 w-8 h-8 text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors" />
+                    <div className="flex flex-col gap-4 mb-4">
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-500/20">2</div>
+                      <h4 className="font-bold text-base leading-tight break-keep">모르는 것을 모른다고 말할 수 있습니다.</h4>
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 break-keep leading-relaxed flex-grow">
+                      아는 척하며 넘기지 않고, 빠르게 공유하고 함께 해결하는 것이 팀에 가장 도움이 된다고 생각합니다.
+                    </p>
+                  </div>
+                </Card>
+
+                <Card className="p-6 border-slate-200 dark:border-zinc-800 bg-card hover:border-emerald-500/50 transition-all shadow-sm group">
+                  <div className="flex flex-col h-full relative">
+                    <FileEdit className="absolute top-0 right-0 w-8 h-8 text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors" />
+                    <div className="flex flex-col gap-4 mb-4">
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-500/20">3</div>
+                      <h4 className="font-bold text-base leading-tight break-keep">부족한 점을 기록하고 개선 방향을 찾습니다.</h4>
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 break-keep leading-relaxed flex-grow">
+                      프로젝트가 끝나면 잘한 점뿐 아니라 못한 점과 다음에 어떻게 개선할지까지 반드시 함께 정리합니다.
+                    </p>
+                  </div>
+                </Card>
+              </div>
+
+              <div className="bg-emerald-950/10 border border-emerald-500/20 rounded-xl p-5 flex items-start gap-4 shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0 border border-emerald-500/20">
+                  <Star className="w-4 h-4" />
+                </div>
+                <p className="text-[15px] font-medium text-slate-700 dark:text-slate-300 leading-relaxed break-keep pt-1">
+                  기술을 <span className="text-emerald-600 dark:text-emerald-400 font-bold">선택한 이유</span>를 설명할 수 있고, 모르는 것을 <span className="text-emerald-600 dark:text-emerald-400 font-bold">숨기지 않으며</span>, 부족한 점에서 <span className="text-emerald-600 dark:text-emerald-400 font-bold">다음 성장 방향</span>을 스스로 찾는 신입 개발자입니다.
                 </p>
               </div>
             </div>

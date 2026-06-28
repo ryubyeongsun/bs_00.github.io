@@ -1,10 +1,15 @@
 import { CodeBlock } from "@/components/troubleshooting-dialog"
+import Image from "next/image"
 import project1 from "@/public/projects/project1-thumbnail.png"
 import project2 from "@/public/projects/project2-thumbnail.png"
 import project3 from "@/public/projects/project3-thumbnail.png"
 import project1Arch from "@/public/projects/project1-architecture.png"
 import project2Arch from "@/public/projects/project2-architecture.png"
 import project3Arch from "@/public/projects/project3-architecture.png"
+import project1Before from "@/public/projects/project1-before.png"
+import project1After from "@/public/projects/project1-after.png"
+import { ConyArchitectureCompare } from "@/components/cony-architecture-compare"
+import { DuckchiArchitectureCompare } from "@/components/duckchi-architecture-compare"
 
 export const PROJECTS = [
   {
@@ -43,7 +48,9 @@ export const PROJECTS = [
         cause: "1. AI API는 식재료 종류만 반환\n: 시장 단가를 모르기 때문에 예산 파라미터를 전달해도 총 재료비 합계 제어 불가\n\n2. 재료명에 수량·단위·포장 정보 혼재\n: 그대로 검색어 사용 시 노이즈 발생 → 원하는 단품 상품 연결 실패",
         solution: "1. filterItemsToBudget() — Greedy Filter\n: 재료를 추정 단가 기준 내림차순 정렬, 예산 초과 시 비싼 항목부터 순차 제거 (허용 범위 : 예산 x 1.15 이내)\n\n2. IngredientQueryNormalizer\n: 수량·단위·불용어 제거 (\"닭가슴살-100g×30팩\" → \"닭가슴살\")\n카테고리 화이트리스트 필터링 → 후보 TopN 스코어링 → 3개 이상 시 AI rerank → 대표 상품 1개 선정",
         result: "[예산오차] 무제한 초과 → 예산 ±15% 이내로 제어\n[상품 정확도] 엉뚱한 상품 노출 → 키워드 정규화로 매핑 정확도 개선\n[API 안정성] 실패 시 MOCK Fallback으로 서비스 중단 없이 기본 응답 제공",
-        hasImage: true
+        hasImage: true,
+        beforeImage: project1Before,
+        afterImage: project1After
       },
       {
         title: "AI API 응답 지연 및 타임아웃 해결",
@@ -129,6 +136,53 @@ export const PROJECTS = [
           ),
         },
         {
+          title: "📸 Before / After 비교",
+          content: (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                      BEFORE
+                    </span>
+                    <span className="text-sm text-muted-foreground">예산 143% 초과 (427,800원)</span>
+                  </div>
+                  <div className="rounded-lg border border-red-200 dark:border-red-800/50 overflow-hidden">
+                    <Image
+                      src={project1Before}
+                      alt="개선 전: 예산 143% 초과, 대용량 상품 매핑 오류"
+                      className="w-full h-auto"
+                      placeholder="blur"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    AI 추천 문자열을 그대로 검색 → 대용량 묶음 상품이 매핑되어 예산 대폭 초과
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                      AFTER
+                    </span>
+                    <span className="text-sm text-muted-foreground">예산 96% 적중 (289,400원)</span>
+                  </div>
+                  <div className="rounded-lg border border-green-200 dark:border-green-800/50 overflow-hidden">
+                    <Image
+                      src={project1After}
+                      alt="개선 후: 예산 96% 적중, 정확한 단품 상품 매핑"
+                      className="w-full h-auto"
+                      placeholder="blur"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    정규화 + Greedy Filter 적용 → 단품 상품 정확 매핑, 예산 ±15% 이내 제어
+                  </p>
+                </div>
+              </div>
+            </div>
+          ),
+        },
+        {
           title: "3. [Problem 2] AI 식단 생성 API 타임아웃",
           content: (
             <ul className="list-disc list-inside space-y-1">
@@ -193,7 +247,7 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
     description:
       "AI(OCR) 기프티콘 자동 등록, 위치 기반 스마트 알림, 유효기간 임박 자동 판매, 공유방 기능을 제공하는 기프티콘 관리·거래 앱",
     period: "2026.01 ~ 2026.02 (6주)",
-    team: "5명 (FE 2명, BE 1명, BE/본인 1명, INFRA 1명, AI 1명)",
+    team: "6명 (FE 2명, BE 1명, BE/본인 1명, INFRA 1명, AI 1명)",
     role: "Backend Developer (결제/거래 도메인)",
     techStack: [
       "Java 17",
@@ -230,8 +284,9 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
         problem: "사용자 위치 기반 \"가까운 매장순\" 판매글 정렬 시\nMySQL에서 Haversine 공식으로 모든 매장과의 거리를 매 요청마다 계산\n→ 매장 수 증가 시 O(N) 풀스캔 + 수학 연산\n→ 응답 속도 저하 (매장이 많아질수록 느려짐)",
         cause: "MySQL의 한계\n① 매 요청마다 전체 매장에 대해 Haversine 삼각함수 연산 수행\n② 거리 계산 결과 정렬 시 인덱스 활용 불가\n③ 브랜드별 최소 거리 계산에 GROUP BY + 서브쿼리 필요\n→ 위치 검색 요청이 많아질수록 DB 부하 급증",
         solution: "Redis GEO로 위치 데이터를 인메모리 캐시 계층에 분리\n① GEOSEARCH로 반경 5km 내 매장만 조회\n② Pipeline으로 브랜드명 일괄 조회\n③ 브랜드별 최소 거리 맵 생성 후 메모리 정렬",
-        result: "[정렬 방식] DB ORDER BY (인덱스 불가) → 인메모리 정렬\n[네트워크] 매장 N개 × N번 왕복 → Pipeline 1회\n[거리 계산] 매 요청마다 전체 매장 풀스캔 → 반경 내 매장만 조회\n[확장성] 매장 증가 시 성능 저하 → 캐시 계층 분리로 DB 부하 차단",
-        hasImage: true
+        result: "• [정렬 방식]\nDB ORDER BY (인덱스 불가) → 인메모리 정렬\n\n• [네트워크]\n매장 N개 × N번 왕복 → Pipeline 1회\n\n• [거리 계산]\n매 요청마다 전체 매장 풀스캔 → 반경 내 매장만 조회\n\n• [확장성]\n매장 증가 시 성능 저하 → 캐시 계층 분리로 DB 부하 차단",
+        hasImage: true,
+        customVisual: <ConyArchitectureCompare />
       }
     ],
     situation:
@@ -400,11 +455,12 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
     problemSolving: [
       {
         title: "배포 후 모임방 생성 API 실패 해결",
-        problem: "로컬에선 정상 동작하던 '모임방 생성(POST)' API가\n배포 후 지속 실패 (405 Method Not Allowed)",
-        cause: "① Nginx 301 상태 코드의 스펙 한계: 보안(HTTPS) 강제 전환을 위해 301 Moved Permanently 리다이렉트 사용 중\n② 프록시 계층 규약 충돌: 일부 클라이언트 환경에서 301 응답을 받고 재요청 시, 기존 POST 메서드를 GET으로 변환하고 Body를 버리는 HTTP 스펙 상의 종속성 문제 확인",
-        solution: "308 Permanent Redirect로 전면 교체\n① 최신 HTTP 스펙 규약 활용: Nginx nginx.conf 설정 파일 수정 (return 308 https://$host$request_uri; 적용)\n② 308 코드를 통해 리다이렉트 발생 시 기존 HTTP 메서드(POST)와 Body 데이터를 원본 그대로 유지하도록 네트워크 프록시 흐름 강제",
-        result: "[HTTP 메서드] POST → GET으로 변환됨 → POST 메서드 유지\n[Body 데이터] 페이로드 소실 → Body 데이터 정상 전달\n[API 안정성] 배포 후 통신 장애 발생 → 네트워크 프록시 환경 정상 동작 보장",
-        hasImage: false
+        problem: "• 로컬에선 정상 동작하던 '모임방 생성(POST)' API가 배포 후 지속 실패\n→ 405 Method Not Allowed 에러 발생",
+        cause: "• Nginx 301 상태 코드의 스펙 한계\n보안(HTTPS) 강제 전환을 위해 301 Moved Permanently 리다이렉트 사용 중\n\n• 프록시 계층 규약 충돌\n일부 클라이언트 환경에서 301 응답을 받고 재요청 시, 기존 POST 메서드를 GET으로 강제 변환하고 Body 페이로드를 버리는 HTTP 스펙 상의 종속성 문제 확인",
+        solution: "• 308 Permanent Redirect로 전면 교체\nNginx nginx.conf 설정 파일 수정 (return 308 https://$host$request_uri; 적용)\n\n• 최신 HTTP 스펙 규약 활용\n308 코드를 통해 리다이렉트 발생 시 기존 HTTP 메서드(POST)와 Body 데이터를 원본 그대로 유지하도록 네트워크 프록시 흐름 강제",
+        result: "• [HTTP 메서드]\nPOST → GET으로 변환됨 → POST 메서드 유지\n\n• [Body 데이터]\n페이로드 소실 → Body 데이터 정상 전달\n\n• [API 안정성]\n배포 후 통신 장애 발생 → 네트워크 프록시 환경 정상 동작 보장",
+        hasImage: true,
+        customVisual: <DuckchiArchitectureCompare />
       }
     ],
     situation:

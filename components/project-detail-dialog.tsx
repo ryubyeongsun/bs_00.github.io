@@ -36,6 +36,9 @@ export interface ProblemSolving {
   result: string
   imagePlaceholder?: boolean
   hasImage?: boolean
+  beforeImage?: string | StaticImageData
+  afterImage?: string | StaticImageData
+  customVisual?: React.ReactNode
 }
 
 export interface ProjectContribution {

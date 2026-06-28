@@ -15,6 +15,23 @@ import { BookOpen, Terminal } from "lucide-react"
 import { ProblemSolving } from "./project-detail-dialog"
 import Image from "next/image"
 
+function RenderFormattedText({ text, className = "" }: { text: string; className?: string }) {
+  return (
+    <div className={`space-y-2 text-[13px] leading-relaxed break-keep ${className}`}>
+      {text.split('\n').map((line, idx) => {
+        if (line.trim() === '') return <div key={idx} className="h-0.5" />;
+        // "1.", "2.", "→" 등으로 시작하는 문장은 들여쓰기를 약간 조정하거나 그냥 렌더링해도 깔끔합니다.
+        const isBullet = line.trim().startsWith("→") || line.trim().startsWith(":");
+        return (
+          <p key={idx} className={`m-0 ${isBullet ? 'pl-2 text-zinc-500' : ''}`}>
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  )
+}
+
 export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
   return (
     <Dialog>
@@ -53,13 +70,13 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                       <h5 className="text-[12px] font-bold text-red-400 flex items-center gap-1.5">
                         <span className="bg-red-950 px-1.5 py-0.5 rounded text-red-400">🚨</span> 문제 상황
                       </h5>
-                      <p className="text-[13px] text-zinc-400 leading-relaxed whitespace-pre-line break-keep">{ps.problem}</p>
+                      <RenderFormattedText text={ps.problem} className="text-zinc-400" />
                     </div>
                     <div className="space-y-2">
                       <h5 className="text-[12px] font-bold text-orange-400 flex items-center gap-1.5">
                         <span className="bg-orange-950 px-1.5 py-0.5 rounded text-orange-400">🔎</span> 원인 분석
                       </h5>
-                      <p className="text-[13px] text-zinc-400 leading-relaxed whitespace-pre-line break-keep">{ps.cause}</p>
+                      <RenderFormattedText text={ps.cause} className="text-zinc-400" />
                     </div>
                   </div>
 
@@ -67,29 +84,71 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                     <h5 className="text-[12px] font-bold text-blue-400 flex items-center gap-1.5">
                       <span className="bg-blue-900 px-1.5 py-0.5 rounded text-blue-300">💡</span> 해결 방법
                     </h5>
-                    <p className="text-[13px] text-zinc-300 leading-relaxed font-medium whitespace-pre-line break-keep">{ps.solution}</p>
+                    <RenderFormattedText text={ps.solution} className="text-zinc-300 font-medium" />
                   </div>
 
                   <div className="bg-green-950/20 border border-green-900/50 p-4 rounded-lg space-y-2">
                     <h5 className="text-[12px] font-bold text-green-400 flex items-center gap-1.5">
                       <span className="bg-green-900 px-1.5 py-0.5 rounded text-green-300">🏆</span> 결과 및 성과
                     </h5>
-                    <p className="text-[13px] text-zinc-300 leading-relaxed font-medium whitespace-pre-line break-keep">{ps.result}</p>
+                    <RenderFormattedText text={ps.result} className="text-zinc-300 font-medium" />
                   </div>
                 </div>
 
                 {/* Right: Before/After 이미지 플레이스홀더 (조건부 렌더링) */}
                 {ps.hasImage !== false && (
-                  <div className="xl:w-[450px] shrink-0 border border-zinc-800 border-dashed rounded-xl bg-zinc-900/50 flex flex-col items-center justify-center min-h-[300px] p-6 text-center">
-                    <Image
-                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%2352525b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E"
-                      width={48}
-                      height={48}
-                      alt="placeholder"
-                      className="mb-4 opacity-50"
-                    />
-                    <p className="text-zinc-500 text-[13px] font-medium mb-1">Before / After 비교 이미지 영역</p>
-                    <p className="text-zinc-600 text-[11px]">이 영역에 나중에 개선 전후 이미지가 삽입됩니다.</p>
+                  <div className="xl:w-[450px] shrink-0 border border-zinc-800 rounded-xl bg-[#111111] flex flex-col p-4 gap-4 justify-center">
+                    {ps.customVisual ? (
+                      ps.customVisual
+                    ) : ps.beforeImage && ps.afterImage ? (
+                      <>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-900/50">
+                              BEFORE
+                            </span>
+                          </div>
+                          <div className="rounded-lg border border-red-900/30 overflow-hidden relative">
+                            <Image
+                              src={ps.beforeImage}
+                              alt="개선 전"
+                              width={450}
+                              height={300}
+                              className="w-full h-auto object-cover"
+                            />
+                          </div>
+                        </div>
+                        <div className="w-full border-t border-zinc-800 border-dashed my-1" />
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-950 text-green-400 border border-green-900/50">
+                              AFTER
+                            </span>
+                          </div>
+                          <div className="rounded-lg border border-green-900/30 overflow-hidden relative">
+                            <Image
+                              src={ps.afterImage}
+                              alt="개선 후"
+                              width={450}
+                              height={300}
+                              className="w-full h-auto object-cover"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex-1 flex flex-col items-center justify-center border-dashed border border-zinc-800 rounded-lg bg-zinc-900/50 p-6 min-h-[300px]">
+                        <Image
+                          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%2352525b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E"
+                          width={48}
+                          height={48}
+                          alt="placeholder"
+                          className="mb-4 opacity-50"
+                        />
+                        <p className="text-zinc-500 text-[13px] font-medium mb-1">Before / After 비교 이미지 영역</p>
+                        <p className="text-zinc-600 text-[11px] text-center">이 영역에 나중에 개선 전후 이미지가 삽입됩니다.</p>
+                      </div>
+                    )}
                   </div>
                 )}
 
