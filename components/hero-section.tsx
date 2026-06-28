@@ -48,7 +48,11 @@ export default function HeroSection() {
             className="h-12 px-8 text-base font-semibold bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/25 transition-all hover:scale-105"
             asChild
           >
-            <a href="/portfolio.pdf" target="_blank" rel="noopener noreferrer">
+            <a 
+              href={process.env.NODE_ENV === "production" ? "/bs_00.github.io/portfolio.pdf" : "/portfolio.pdf"} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
               <Download className="mr-2 h-5 w-5" />
               포트폴리오 PDF
             </a>
