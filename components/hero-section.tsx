@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Github, ArrowRight } from "lucide-react"
+import { Github, ArrowRight, Download } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export default function HeroSection() {
@@ -42,10 +42,22 @@ export default function HeroSection() {
           <span className="flex items-center gap-2"><span className="text-emerald-400">✉️</span> abcfg89@naver.com</span>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
+        <div className="flex flex-wrap gap-4 justify-center w-full max-w-3xl animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
           <Button
             size="lg"
             className="h-12 px-8 text-base font-semibold bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/25 transition-all hover:scale-105"
+            asChild
+          >
+            <a href="/portfolio.pdf" target="_blank" rel="noopener noreferrer">
+              <Download className="mr-2 h-5 w-5" />
+              Download PDF
+            </a>
+          </Button>
+
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-12 px-8 text-base border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-300 hover:border-emerald-300 transition-all hover:scale-105 backdrop-blur-sm"
             onClick={() => {
               document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
             }}
@@ -56,23 +68,12 @@ export default function HeroSection() {
           <Button
             size="lg"
             variant="outline"
-            className="h-12 px-8 text-base border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-300 hover:border-emerald-300 transition-all hover:scale-105 backdrop-blur-sm"
-            onClick={() => {
-              document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })
-            }}
-          >
-            About Me
-          </Button>
-
-          <Button
-            size="lg"
-            variant="outline"
             className="h-12 px-8 text-base border-emerald-800/50 text-emerald-200 bg-emerald-950/30 hover:bg-emerald-900/40 hover:text-white hover:border-emerald-500/50 transition-all hover:scale-105 backdrop-blur-sm"
             asChild
           >
             <a href="https://github.com/ryubyeongsun" target="_blank" rel="noopener noreferrer">
               <Github className="mr-2 h-5 w-5" />
-              GitHub Profile
+              GitHub
             </a>
           </Button>
         </div>
