@@ -69,7 +69,7 @@ export default function PlanSection() {
           <div className="lg:col-span-1 pt-2 lg:pt-16">
             <Card className="p-6 bg-[#0a1711] border-emerald-900/30 rounded-3xl h-full flex flex-col shadow-xl">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center">👤</span>
+                <span className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">👤</span>
                 Contact / Link
               </h3>
               
@@ -116,7 +116,7 @@ export default function PlanSection() {
                   </div>
                   <div>
                     <p className="text-xs text-zinc-500 mb-0.5">Portfolio</p>
-                    <a href="https://bs_00.github.io" target="_blank" rel="noreferrer" className="text-sm font-medium text-zinc-200 hover:text-emerald-400 transition-colors">
+                    <a href="https://ryubyeongsun.github.io/bs_00.github.io" target="_blank" rel="noreferrer" className="text-sm font-medium text-zinc-200 hover:text-emerald-400 transition-colors">
                       bs_00.github.io
                     </a>
                   </div>
