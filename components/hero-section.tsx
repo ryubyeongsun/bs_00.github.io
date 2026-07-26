@@ -28,8 +28,8 @@ export default function HeroSection() {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-extrabold mb-8 text-white tracking-tight leading-tight [word-break:keep-all] animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-          빠르게 만들되, <br className="hidden md:block" />
-          끝까지 검증하는 백엔드 개발자{" "}
+          문제의 원인을 <br className="hidden md:block" />
+          끝까지 해결하는 백엔드 개발자{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
             류병선
           </span>
