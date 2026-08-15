@@ -446,9 +446,9 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
       percentage: "15%",
       summary: "MSA 인프라 구축, 배포 자동화, 게이트웨이 인증 통합",
       details: [
-        { title: "Docker Compose MSA 배포", percentage: 5, description: "5개 마이크로서비스 및 Kafka, Redis 통합 런타임 환경 구성" },
+        { title: "Docker Compose MSA 배포", percentage: 5, description: "5개 마이크로서비스와 Redis를 포함한 운영 Compose 구성" },
         { title: "Spring Cloud Gateway JWT", percentage: 5, description: "라우팅 단일 진입점에서 토큰 검증 및 인가 처리" },
-        { title: "Jenkins CI/CD 자동화", percentage: 5, description: "브랜치별(develop/release) 배포 환경 분리 및 자동화" }
+        { title: "Jenkins CI/CD", percentage: 5, description: "CI·release job별 빌드와 이미지 생성·EC2 배포 흐름 구성" }
       ],
     },
     teamComposition: [
@@ -461,8 +461,8 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
         title: "배포 후 모임방 생성 API 실패 해결",
         problem: "• 로컬에선 정상 동작하던 '모임방 생성(POST)' API가 배포 후 지속 실패\n→ 405 Method Not Allowed 에러 발생",
         cause: "• Nginx 301 상태 코드의 스펙 한계\n보안(HTTPS) 강제 전환을 위해 301 Moved Permanently 리다이렉트 사용 중\n\n• 프록시 계층 규약 충돌\n일부 클라이언트 환경에서 301 응답을 받고 재요청 시, 기존 POST 메서드를 GET으로 강제 변환하고 Body 페이로드를 버리는 HTTP 스펙 상의 종속성 문제 확인",
-        solution: "• 308 Permanent Redirect로 전면 교체\nNginx nginx.conf 설정 파일 수정 (return 308 https://$host$request_uri; 적용)\n\n• 최신 HTTP 스펙 규약 활용\n308 코드를 통해 리다이렉트 발생 시 기존 HTTP 메서드(POST)와 Body 데이터를 원본 그대로 유지하도록 네트워크 프록시 흐름 강제",
-        result: "• [HTTP 메서드]\nPOST → GET으로 변환됨 → POST 메서드 유지\n\n• [Body 데이터]\n페이로드 소실 → Body 데이터 정상 전달\n\n• [API 안정성]\n배포 후 통신 장애 발생 → 네트워크 프록시 환경 정상 동작 보장",
+        solution: "• 운영 Nginx HTTPS 리다이렉트를 308 Permanent Redirect로 변경\n공개 레포에는 Nginx 설정 파일이 없어 운영 서버 설정 기준으로 적용\n\n• HTTP 메서드 보존\n308 응답을 사용해 리다이렉트 후에도 POST 메서드와 Body가 유지되도록 조정",
+        result: "• [HTTP 메서드]\n일부 클라이언트의 POST → GET 변환 문제를 308 리다이렉트로 대응\n\n• [Body 데이터]\nHTTPS 재요청에서도 Body가 유지되도록 운영 설정 조정\n\n• [운영 설정]\nNginx 설정 파일은 공개 레포에 없으며, 서버 설정 기준으로 관리",
         hasImage: true,
         customVisual: <DuckchiArchitectureCompare />
       }
@@ -470,14 +470,14 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
     situation:
       "친구/동료 모임에서 공동 결제 후 정산이 번거로운 사용자를 위해, 모임방 생성부터 정산/송금, 소비 리포트까지 한 흐름으로 제공하는 모바일 더치페이 서비스입니다. 프로젝트 후반에는 단순히 기능 구현을 넘어 실제 운영 환경에서 안정적으로 배포되고 동작하는 구조가 필요했고, 인증 흐름과 외부 연동, 프록시, 메시징, 모니터링까지 여러 계층의 문제가 동시에 드러났습니다.",
     task: "인프라 담당으로서 EC2 기반 운영 환경에 MSA 서비스를 안정적으로 배포하고, CI/CD와 모니터링 체계를 구축해야 했습니다. 백엔드에서는 카카오 OAuth 로그인, JWT 토큰 관리, Redis 기반 세션 관리를 구현하고, 운영 환경에서 발생하는 인증/리다이렉트/시간대 이슈를 빠르게 해결하는 것이 핵심 과제였습니다.",
-    action: `1. Docker Compose 기반 운영 환경 구성: EC2 위에 Gateway, Core, Pay, Insight, Discovery 서비스를 컨테이너로 배포하고 Redis, Kafka를 함께 구성해 서비스 간 의존성을 정리.
-2. Jenkins CI/CD 분리: develop 브랜치는 CI(빌드/테스트), release 브랜치는 CD(Docker Hub 푸시 → EC2 재배포)로 목적을 분리하여 배포 안정성 확보.
-3. Nginx + HTTPS 운영 안정화: 리버스 프록시, TLS 인증서 설정, 301→308 리다이렉트 변경으로 POST 메서드 유지 문제 해결. API/SSE/정적 리소스 경로별 프록시 정책 분리.
+    action: `1. Docker Compose 기반 운영 환경 구성: EC2에서 Gateway, Core, Pay, Insight, Discovery 서비스와 Redis를 컨테이너로 구성. Kafka 이벤트 코드와 Prometheus 수집 설정은 별도 인프라 연동을 전제로 함.
+2. Jenkins CI/CD 분리: Jenkinsfile에서 CI job은 서비스 빌드, release job은 Docker Hub 이미지 푸시와 EC2 Docker Compose 재배포 흐름을 수행하도록 구성.
+3. Nginx + HTTPS 운영 이슈 대응: 운영 Nginx의 301→308 리다이렉트 변경으로 POST 메서드 유지 문제를 해결. 공개 레포에 Nginx 설정 파일은 없으며, API/SSE/정적 리소스별 프록시 정책은 향후 운영 설정 보강 과제.
 4. 인증 흐름 구현: 카카오 OAuth 로그인 → JWT Access Token(30분) + Refresh Token(7일) 발급. Redis에 RTK 저장(TTL 기반 자동 만료), 로그아웃 시 삭제.
 5. 운영 이슈 대응: Kafka 누락으로 insight-service 기동 실패, RDS 스키마 부재로 서비스 다운, 금융 API 시간대(KST/UTC) 차이 문제를 로그 추적으로 해결.
-6. 모니터링 체계 구축: Spring Boot Actuator + Prometheus + Grafana를 연동해 CPU, 메모리, HTTP 요청 수를 대시보드로 시각화.`,
+6. 모니터링 구성: Spring Boot Actuator와 Prometheus scrape 설정을 포함. Grafana 대시보드·알림과 장애 대응 자동화는 추가 보강 과제.`,
     result:
-      "Docker Compose 하나로 MSA 5개 서비스 + 인프라를 재현 가능한 환경 구축. Jenkins CI/CD로 수동 배포 작업 100% 제거. Nginx 308 리다이렉트 적용으로 운영 환경 POST 메서드 유지 문제 해결. Prometheus + Grafana로 배포 후 서비스 상태 실시간 모니터링 체계 확립.",
+      "Docker Compose로 MSA 5개 서비스와 Redis를 재현 가능한 운영 구성으로 정리했습니다. Jenkins 파이프라인으로 반복적인 빌드·이미지 생성·EC2 배포 절차를 자동화했고, 운영 Nginx의 308 리다이렉트로 POST 메서드 유지 문제를 해결했습니다. Actuator와 Prometheus 수집 설정을 구성했으며 Grafana 대시보드·알림은 추가 보강 과제입니다.",
     retrospective: {
       regrets: [
         "단일 EC2 운영으로 서비스가 늘어나면 리소스 한계. 멀티 노드(ECS, K8s) 전환을 고려해야 함",
@@ -486,7 +486,7 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
       improvements: [
         "Kubernetes(EKS) 전환으로 오토스케일링 및 셀프힐링 적용 검토",
         "Resilience4j 서킷 브레이커 패턴 도입으로 서비스 간 장애 격리",
-        "Blue/Green 배포 전략으로 무중단 배포 구현",
+        "Blue/Green 배포 전략 도입 검토 (현재 미구현)",
       ],
       lesson:
         "\"로컬에서 되는데 운영에서 안 된다\"는 문제는 대부분 애플리케이션 코드가 아니라 프록시, 인증서, 리다이렉트 정책 같은 인프라 환경 차이에서 발생한다는 것을 체감했습니다. \"요청이 어디서 변형되는가\"를 기준으로 원인을 좁히는 디버깅 습관을 만들었습니다.",
@@ -494,9 +494,9 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
     image: project3,
     architectureImage: project3Arch,
     techReasons: [
-      { label: "Docker Compose & Jenkins", desc: "5개의 MSA 서비스 배포 복잡도를 해결하고, CI/CD 자동화를 통해 수동 배포로 인한 휴먼 에러를 제거했습니다." },
+      { label: "Docker Compose & Jenkins", desc: "5개 서비스와 Redis를 Compose로 구성하고, Jenkins에서 서비스 빌드·이미지 생성·푸시·EC2 배포 절차를 반복 가능하게 만들었습니다." },
       { label: "Spring Cloud Gateway", desc: "각 마이크로서비스마다 중복되는 인증 로직을 전역 필터(JWT)로 중앙 제어하여 단일 진입점을 확보했습니다." },
-      { label: "Kafka Event Broker", desc: "결제와 리포트 도메인 간의 동기 통신으로 인한 장애 연쇄를 방지하고, 큐 분리를 통해 서비스 간 강결합을 끊어냈습니다." }
+      { label: "Kafka Event Broker", desc: "결제·인사이트 등 일부 도메인 이벤트를 Kafka producer/consumer로 비동기 전달해 직접 동기 호출 의존도를 줄이는 방향으로 구성했습니다." }
     ],
     troubleshooting: {
       title:
@@ -568,7 +568,7 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
                   변경해 클라이언트가 HTTPS 재요청 시에도 POST 요청을 그대로
                   유지하도록 수정했습니다.
                 </p>
-                <CodeBlock label="nginx.conf">
+                <CodeBlock label="운영 Nginx 설정 예시 (레포 미포함)">
                   {`server {
     listen 80;
     server_name duckchi.example.com;
@@ -579,9 +579,10 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
               <div>
                 <strong>3.2 경로별 프록시 설정 점검</strong>
                 <p className="mt-1">
-                  API, SSE, 정적 리소스의 성격이 달라 동일 설정으로 처리하지 않고
-                  경로별 프록시 정책을 분리했습니다. 이후 SSE 연결에는 버퍼링과
-                  timeout 설정도 별도로 조정했습니다.
+                  API, SSE, 정적 리소스처럼 요청 특성이 다른 경로는 프록시 설정을
+                  분리할 필요가 있음을 확인했습니다. 공개 레포에는 해당 Nginx 경로별
+                  설정이 없어, SSE 버퍼링과 timeout 설정은 향후 운영 설정 보강 과제로
+                  정리했습니다.
                 </p>
               </div>
             </div>
@@ -592,8 +593,9 @@ Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
           content: (
             <ul className="list-disc list-inside space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-md">
               <li>
-                <strong>결과:</strong> 운영 환경에서 모임방 생성 POST 요청이 정상
-                전달되었고, HTTPS 전환 이후에도 API 메서드가 유지되었습니다.
+                <strong>결과:</strong> 운영 Nginx의 308 리다이렉트 적용으로 HTTPS
+                전환 이후에도 POST 메서드와 Body가 유지되도록 조정했습니다. 설정 파일은
+                공개 레포가 아닌 운영 서버에서 관리했습니다.
               </li>
               <li>
                 <strong>운영 관점:</strong> 로컬에서는 재현되지 않는 문제일수록
