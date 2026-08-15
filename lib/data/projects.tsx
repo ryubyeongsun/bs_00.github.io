@@ -56,20 +56,20 @@ export const PROJECTS = [
         title: "AI API 응답 지연 및 타임아웃 해결",
         problem: "외부 AI API가 식단 생성에 8~10초 소요\n→ 동기 처리 시 브라우저 타임아웃(30초) 임박\n→ 사용자 응답 없음으로 인식\n→ 서비스 이탈 발생",
         cause: "식단 생성 요청이 동기적으로 처리되어\nAI API 응답이 올 때까지 스레드 블로킹\n클라이언트는 응답 대기 중 아무것도 할 수 없는 상태",
-        solution: "@Async + CompletableFuture 비동기 전환\n① 요청 즉시 200 응답 반환\n② 백그라운드에서 AI API 처리\n③ 프론트 폴링으로 완료 확인 (1초 간격 GET 요청)",
-        result: "[응답 시간] 8~10초 → 즉시(3초 이하) (80% 개선)\n[타임아웃 에러율] 발생 → 비동기전환으로 해결 (구조적 해소)\n[사용자 경험] 대기 화면 → 진행률 표시로 자연스러운 UX",
+        solution: "CompletableFuture + 전용 ThreadPoolTaskExecutor 기반 백그라운드 처리\n① 1주차 식단을 우선 생성해 응답에 포함\n② 나머지 주차는 백그라운드에서 생성\n③ 식단 조회 API로 생성 결과를 재확인",
+        result: "[응답 흐름] 1주차 생성 결과를 먼저 제공하고 나머지 생성 작업을 분리\n[자원 제어] Core=5, Max=10, Queue=50 Executor로 백그라운드 작업 수 제한\n[확인 방식] 별도 상태 API 없이 식단 조회 API로 생성 결과 재확인",
         hasImage: false
       }
     ],
     situation:
       "운동과 식단 관리를 병행하려는 사용자들이 과학적 근거(TDEE)에 기반한 맞춤 식단을 추천받기 어려운 문제가 있었습니다. 기존 식단 앱은 단순 칼로리 계산에 그쳐, 개인별 대사량을 반영한 영양소 최적화와 체형 변화의 시각적 피드백이 부족했습니다.",
     task: "사용자의 신체 정보를 기반으로 Harris-Benedict 공식으로 TDEE를 분석하고, AI가 30일분 맞춤 식단을 자동 생성하는 백엔드 시스템을 구축해야 했습니다. 특히 외부 AI API의 응답 지연(8~10초) 문제를 해결하여 사용자 경험을 보장하는 것이 핵심 과제였습니다.",
-    action: `1. Spring @Async 비동기 처리: AI 식단 생성 API 호출을 비동기로 전환. ThreadPoolTaskExecutor(Core=5, Max=10)를 구성하고 CompletableFuture로 백그라운드 처리. 사용자에게 즉시 200 응답을 반환하고, 프론트엔드가 폴링으로 진행 상태를 확인하도록 설계.
+    action: `1. CompletableFuture + 전용 Executor 백그라운드 처리: 1주차 식단은 우선 생성해 응답에 포함하고, 나머지 주차는 CompletableFuture.runAsync(..., mealTaskExecutor)로 분리. Core=5, Max=10, Queue=50의 ThreadPoolTaskExecutor로 백그라운드 작업 수를 제어하고, 식단 조회 API로 생성 결과를 재확인.
 2. JWT RTR 인증: Access Token(30분) + Refresh Token(7일)을 활용하되, Refresh Token도 사용 시 새로 발급하는 Rotation 방식을 적용하여 토큰 탈취 위험을 최소화.
 3. TDEE 기반 식단 추천 로직: 나이·성별·체중·신장·활동량으로 기초대사량(BMR) 계산 후 목표(다이어트/유지/증량)에 맞춘 칼로리와 탄·단·지 비율을 산출하여 AI에게 전달.
 4. 11번가 API 장보기 연동: 추천 식단의 식재료를 11번가 API로 검색·링크하는 기능 구현. 외부 API 장애 시에도 서비스가 중단되지 않도록 Mock Fallback을 적용.`,
     result:
-      "🏆 SSAFY 14기 최종 프로젝트 우수상 수상. @Async 적용으로 API 체감 응답 시간을 8~10초에서 1초 이하로 단축(80% 개선). 타임아웃 에러율 100% → 0%로 감소. WAS 스레드 블로킹 제거로 동시 요청 처리 능력 향상.",
+      "🏆 SSAFY 14기 최종 프로젝트 우수상 수상. 1주차 식단을 우선 제공하고 나머지 생성 작업을 백그라운드로 분리해, 장시간 AI 호출과 요청 처리 흐름을 분리했습니다. 전용 Executor로 동시에 실행되는 백그라운드 작업 수를 제어했습니다.",
     retrospective: {
       regrets: [
         "상품 파싱 실패 케이스 일부 잔존 (수량/단위 혼재 패턴 완전 미해결)",
@@ -79,6 +79,7 @@ export const PROJECTS = [
         "AI rerank 후보 품질 강화 (하드필터 + 스코어링 먼저 계산)",
         "파싱 정규화 화이트리스트 확장 및 개선",
         "Redis 캐싱을 도입하여 11번가 커머스 API 호출 최소화",
+        "jobId 기반 상태 관리와 전용 polling API를 추가해 생성 진행 상태를 명확히 제공",
       ],
       lesson:
         "단순히 외부 API를 연동하는 것을 넘어, 실패·타임아웃·사용자 대기 상태까지 고려한 전체 흐름(Flow) 설계가 훨씬 중요하다는 것을 깨달았습니다. 기술적인 성능 개선만큼이나 예외 상황에서의 안정성과 UX 방어가 필수적이라는 점을 배웠습니다.",
@@ -89,7 +90,7 @@ export const PROJECTS = [
     techReasons: [
       { label: "MyBatis", desc: "JPA 대신 동적 SQL과 resultMap을 활용하여 실사용 흐름에 맞는 복잡한 조건 쿼리를 직접 제어하기 위해 선택했습니다." },
       { label: "JWT RTR", desc: "일반 JWT 대신 Refresh Token 사용 시마다 토큰을 즉각 폐기/무효화하여 탈취 및 악용을 구조적으로 차단했습니다." },
-      { label: "@Async", desc: "전체 WebFlux 전환 비용을 피하면서도 기존 Spring MVC 구조 내에서 AI API 대기 스레드 블로킹 문제를 효율적으로 해결했습니다." }
+      { label: "CompletableFuture + Executor", desc: "기존 Spring MVC 구조를 유지하면서 CompletableFuture.runAsync()에 전용 ThreadPoolTaskExecutor를 연결해 장시간 AI 생성 작업을 백그라운드로 분리했습니다." }
     ],
     troubleshooting: {
       title: "AI 식단 파이프라인 지연 및 커머스 연동 정합성 문제 해결",
@@ -196,27 +197,30 @@ export const PROJECTS = [
           ),
         },
         {
-          title: "4. [Resolution 2] @Async 기반 비동기 전환",
+          title: "4. [Resolution 2] CompletableFuture 기반 백그라운드 처리",
           content: (
             <div className="space-y-4">
               <div>
-                <strong>4.1 Spring MVC에서 @Async 분리 (WebFlux 대안)</strong>
+                <strong>4.1 전용 Executor를 사용한 생성 작업 분리</strong>
                 <p>
-                  전체 시스템을 WebFlux로 전환하기에는 리팩토링 비용이 컸으므로, 기존 구조를 유지하며 비동기 처리만 분리하는 <code>@Async + CompletableFuture</code>를 채택했습니다.
+                  전체 시스템을 WebFlux로 전환하지 않고 기존 Spring MVC 구조를 유지했습니다. 1주차 식단은 우선 생성하고, 나머지 주차 생성 작업은 <code>CompletableFuture.runAsync(..., mealTaskExecutor)</code>로 분리했습니다. Core=5, Max=10, Queue=50의 전용 <code>ThreadPoolTaskExecutor</code>를 사용해 백그라운드 작업 수를 제어했습니다.
                 </p>
-                <CodeBlock label="MealService.java">
-                  {`@Async("taskExecutor")
-public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest request) {
-    // 1. 프론트에 즉시 200 응답 반환 후 백그라운드 처리
-    String aiResult = restTemplate.postForObject(AI_API_URL, request, String.class);
-    return CompletableFuture.completedFuture(saveMealPlan(aiResult));
-}`}
+                <CodeBlock label="MealPlanServiceImpl.java">
+                  {`CompletableFuture.runAsync(() -> {
+    try {
+        generateRemainingWeeksParallel(mealPlan, allDays, basePayload,
+                targetKcalPerDay, mealsPerDay);
+    } catch (Exception e) {
+        log.error("[MealPlan] Background generation failed for planId={}",
+                mealPlan.getId(), e);
+    }
+}, mealTaskExecutor);`}
                 </CodeBlock>
               </div>
               <div>
-                <strong>4.2 프론트엔드 폴링 (진행률 표시)</strong>
+                <strong>4.2 생성 결과 재확인 및 확장 방향</strong>
                 <p>
-                  서버에서 백그라운드 처리가 진행되는 동안 프론트엔드(Vue.js)에서는 1초 간격으로 상태를 확인(Polling)하며 사용자에게 진행률 UI를 제공했습니다.
+                  현재는 별도 jobId 또는 상태 API 없이 식단 조회 API를 다시 호출해 생성 결과를 확인합니다. <code>@Async</code> 어노테이션 메서드가 아니라 <code>CompletableFuture.runAsync(..., mealTaskExecutor)</code>로 작업을 분리한 구조이며, 향후 jobId 기반 상태 API, polling, 메시지 큐 구조로 확장할 수 있습니다.
                 </p>
               </div>
             </div>
@@ -230,7 +234,7 @@ public CompletableFuture<MealPlanResponse> generateMealPlanAsync(MealRequest req
                 <strong>예산 및 정확도 제어:</strong> 예산 오차 무제한 초과를 ±15% 이내로 제어하고, 정규화로 엉뚱한 상품 노출을 차단했습니다.
               </li>
               <li>
-                <strong>타임아웃 에러 0%:</strong> 동기 처리 대기 시간(8~10초)을 즉시 반환으로 개선(80% 단축)하여 UX를 개선했습니다.
+                <strong>생성 흐름 분리:</strong> 1주차 식단을 우선 생성하고 나머지 주차 생성 작업을 백그라운드로 분리했습니다. 별도 상태 API와 polling은 향후 개선 과제입니다.
               </li>
               <li>
                 <strong>안정적인 커머스 연동:</strong> API 실패 시 Mock Fallback을 통해 서비스 중단 없이 유연하게 대처했습니다.
