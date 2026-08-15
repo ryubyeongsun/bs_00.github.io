@@ -249,7 +249,7 @@ export const PROJECTS = [
     id: 2,
     title: "CONY — 기프티콘 관리 및 판매 서비스",
     description:
-      "AI(OCR) 기프티콘 자동 등록, 위치 기반 스마트 알림, 유효기간 임박 자동 판매, 공유방 기능을 제공하는 기프티콘 관리·거래 앱",
+      "AI(OCR) 기프티콘 자동 등록, 위치 기반 스마트 알림, 사용자 설정 자동판매와 유효기간 임박 판매 제안, 공유방 기능을 제공하는 기프티콘 관리·거래 앱",
     period: "2026.01 ~ 2026.02 (6주)",
     team: "6명 (FE 2명, BE 1명, BE/본인 1명, INFRA 1명, AI 1명)",
     role: "Backend Developer (결제/거래 도메인)",
@@ -270,9 +270,9 @@ export const PROJECTS = [
       percentage: "25%",
       summary: "결제 트랜잭션 동시성 제어 및 위치 기반 성능 최적화",
       details: [
-        { title: "PESSIMISTIC_WRITE 비관적 락", percentage: 10, description: "동시 구매 결제 시 데이터 정합성 보장 및 중복 거래 차단" },
-        { title: "거래 프로세스 원자적 설계", percentage: 10, description: "본인 검증, 잔액 확인, 소유권 이전을 하나의 트랜잭션으로 통합" },
-        { title: "Redis GEO 반경 검색 API", percentage: 5, description: "Haversine 공식 의존성 탈피, 인메모리 반경 검색 구현" }
+        { title: "PESSIMISTIC_WRITE 비관적 락", percentage: 10, description: "동시 구매 시 동일 판매글 경합을 순차 처리하도록 설계" },
+        { title: "거래 프로세스 트랜잭션", percentage: 10, description: "판매 상태·본인 구매·잔액 검증과 포인트 이동, 판매 상태 변경을 한 흐름으로 처리" },
+        { title: "Redis GEO 반경 검색 API", percentage: 5, description: "반경 내 매장 조회와 Pipeline 기반 브랜드명 일괄 조회 구현" }
       ],
     },
     teamComposition: [
@@ -288,20 +288,20 @@ export const PROJECTS = [
         problem: "사용자 위치 기반 \"가까운 매장순\" 판매글 정렬 시\nMySQL에서 Haversine 공식으로 모든 매장과의 거리를 매 요청마다 계산\n→ 매장 수 증가 시 O(N) 풀스캔 + 수학 연산\n→ 응답 속도 저하 (매장이 많아질수록 느려짐)",
         cause: "MySQL의 한계\n① 매 요청마다 전체 매장에 대해 Haversine 삼각함수 연산 수행\n② 거리 계산 결과 정렬 시 인덱스 활용 불가\n③ 브랜드별 최소 거리 계산에 GROUP BY + 서브쿼리 필요\n→ 위치 검색 요청이 많아질수록 DB 부하 급증",
         solution: "Redis GEO로 위치 데이터를 인메모리 캐시 계층에 분리\n① GEOSEARCH로 반경 5km 내 매장만 조회\n② Pipeline으로 브랜드명 일괄 조회\n③ 브랜드별 최소 거리 맵 생성 후 메모리 정렬",
-        result: "• [정렬 방식]\nDB ORDER BY (인덱스 불가) → 인메모리 정렬\n\n• [네트워크]\n매장 N개 × N번 왕복 → Pipeline 1회\n\n• [거리 계산]\n매 요청마다 전체 매장 풀스캔 → 반경 내 매장만 조회\n\n• [확장성]\n매장 증가 시 성능 저하 → 캐시 계층 분리로 DB 부하 차단",
+        result: "• [검색 범위]\nRedis GEO Search로 반경 5km 내 매장만 조회\n\n• [네트워크]\nPipeline으로 조회된 매장의 브랜드명을 일괄 조회\n\n• [거리 계산]\n브랜드별 최소 거리를 애플리케이션 메모리에서 계산·정렬\n\n• [검증 과제]\n응답 시간과 TPS는 k6/JMeter 기반 부하 테스트로 추가 검증 필요",
         hasImage: true,
         customVisual: <ConyArchitectureCompare />
       }
     ],
     situation:
       "기프티콘 유효기간 만료로 인한 낙전 금액이 연간 수백억 원에 달합니다. 기존 서비스는 수동 등록이 번거롭고, 사용 가능한 매장을 찾기 어려우며, 유효기간 관리가 되지 않아 사용률이 낮았습니다. 특히 인기 상품에 여러 사용자가 동시에 구매를 시도하면 중복 거래가 발생할 위험이 있었습니다.",
-    task: "거래 중복 방지를 위한 동시성 제어, 자동 판매 등록 배치, 거리순 검색 성능을 안정적으로 구현하는 것이 목표였습니다. 동시성 제어를 통해 데이터 정합성을 보장하고, 위치 기반 검색의 성능을 최적화하며, 스케줄링을 통한 운영 자동화 시스템을 구축해야 했습니다.",
-    action: `1. 비관적 락 기반 동시성 제어: 판매글 조회 시 JPA PESSIMISTIC_WRITE 락을 적용해 동시 구매 Race Condition을 차단. 낙관적 락은 충돌 시 재시도 로직이 복잡해져 금융 거래 특성상 비관적 락을 선택.
-2. 거래 프로세스 3단 검증 설계: ① 판매 가능 상태(ON_SALE) 확인 ② 본인 상품 구매 차단 ③ 포인트 잔액 검증 통과 후, 포인트 차감/지급 및 판매 상태를 SOLD_OUT으로 변경하고 Manage 서버에 소유권 이전을 요청. 전체를 하나의 @Transactional로 묶어 원자적 처리.
-3. 배치 자동화: 매일 09:00에 Spring Scheduler 배치를 실행해 만료 판매글 삭제, 예약 판매 생성, PENDING → ON_SALE 전환을 자동화.
-4. Redis GEO 기반 위치 검색: 매장 좌표를 Redis GEO에 저장하고 GEORADIUS 명령으로 반경 검색 및 거리순 정렬을 캐시 계층에서 처리. Pipeline으로 다건 조회 시 네트워크 왕복 최소화.`,
+    task: "거래 중복 위험을 줄이기 위한 동시성 제어, 자동판매 관련 반복 작업, 거리순 검색을 구현하는 것이 목표였습니다. 판매 상태 검증과 포인트 이동을 트랜잭션으로 묶고, 위치 검색의 거리 계산 부담을 Redis 캐시 계층으로 분리했습니다.",
+    action: `1. 비관적 락 기반 동시성 제어: 판매글 조회 시 JPA PESSIMISTIC_WRITE 락을 적용해 동일 판매글에 대한 동시 구매 경합을 순차 처리하도록 설계.
+2. 거래 프로세스 검증: ① 판매 상태 확인 ② 본인 상품 구매 차단 ③ 포인트 잔액 검증 후, 포인트 차감/지급·SOLD_OUT 변경·구매 기록 저장을 하나의 @Transactional 흐름으로 처리하고 Manage 서버에 소유권 이전을 요청.
+3. 배치 자동화: 매일 09:00에 Spring Scheduler가 만료 판매글 삭제, 사용자 설정 자동판매 등록, PENDING → ON_SALE 전환을 처리. 유효기간 임박 기프티콘은 시스템 제안 후 사용자 승인 시 판매 등록.
+4. Redis GEO 기반 위치 검색: Spring Data Redis GEO Search로 반경 5km 내 매장을 조회하고, Pipeline으로 브랜드명을 일괄 조회한 뒤 브랜드별 최소 거리를 메모리에서 정렬.`,
     result:
-      "🏆 SSAFY 14기 공통 프로젝트 우수상 수상. 비관적 락 적용으로 동시 구매 시 데이터 정합성 100% 보장, 중복 거래 완전 차단. Redis GEO로 위치 기반 검색 응답 속도 대폭 개선. Spring Scheduler로 수동 운영 작업 100% 제거.",
+      "🏆 SSAFY 14기 공통 프로젝트 우수상 수상. 비관적 락으로 동일 판매글의 동시 구매 경합을 순차 처리하도록 설계하고, Redis GEO·Pipeline으로 위치 검색의 거리 계산과 네트워크 왕복 부담을 분리했습니다. Spring Scheduler로 만료 판매글 삭제와 예약 판매 전환 등 반복 작업을 자동화했습니다.",
     retrospective: {
       regrets: [
         "락 대기가 길어질 경우 대규모 트래픽에서 처리량(TPS) 하락 우려",
@@ -312,15 +312,15 @@ export const PROJECTS = [
         "k6/JMeter 기반 부하 테스트 시나리오 구축 및 병목 구간 TPS 측정",
       ],
       lesson:
-        "결제 도메인에서는 빠른 응답보다 정확하고 안전한 데이터 처리가 최우선 설계 원칙임을 체감했습니다. 비관적 락은 성능 저하를 유발할 수 있지만, 돈이 오가는 시스템에서 \"단 한 건의 중복 결제도 없어야 한다\"는 요구사항에는 가장 확실한 선택이었습니다.",
+        "결제 도메인에서는 빠른 응답보다 정확하고 안전한 데이터 처리가 최우선 설계 원칙임을 체감했습니다. 비관적 락은 락 대기 비용이 있으므로, 부하 테스트로 처리량과 대기 시간을 검증하며 적용 범위를 조정해야 한다고 배웠습니다.",
     },
     image: project2,
     architectureImage: project2Arch,
     githubLink: "https://github.com/ryubyeongsun/cony-gifticon-platform",
     techReasons: [
-      { label: "JPA 비관적 락 (PESSIMISTIC_WRITE)", desc: "낙관적 락의 재시도 로직 한계를 피하고 '단 한 건의 중복 결제도 허용하지 않는' 금융 거래 무결성을 위해 DB 레벨의 순차 처리를 강제했습니다." },
-      { label: "Redis GEO & Pipeline", desc: "MySQL Haversine 삼각함수 풀스캔의 O(N) 연산 한계를 극복하고, 반경 조회와 일괄 조회로 네트워크 왕복을 최소화했습니다." },
-      { label: "Spring Scheduler", desc: "별도의 무거운 배치 프레임워크 도입 없이, 예약 판매 및 만료 처리를 경량으로 스케줄링하여 운영을 자동화했습니다." }
+      { label: "JPA 비관적 락 (PESSIMISTIC_WRITE)", desc: "동일 판매글을 잠금 조회해 동시 구매 경합을 순차 처리하고, 구매 검증과 포인트 이동·판매 상태 변경을 하나의 트랜잭션 흐름으로 묶었습니다." },
+      { label: "Redis GEO & Pipeline", desc: "반경 5km 내 매장을 Redis GEO Search로 조회하고, Pipeline으로 브랜드명을 일괄 조회해 위치 검색의 Redis 왕복을 줄였습니다." },
+      { label: "Spring Scheduler", desc: "매일 오전 9시에 만료 판매글 삭제, 사용자 설정 자동판매, 판매 예정일 도래 건의 상태 전환을 처리합니다." }
     ],
     troubleshooting: {
       title: "동시 구매 중복 거래 방지 및 위치 검색 성능 최적화",
@@ -346,14 +346,14 @@ export const PROJECTS = [
           content: (
             <div className="space-y-4">
               <div>
-                <strong>2.1 금융 거래 특성상 확실한 순차 처리 선택</strong>
+                <strong>2.1 동일 판매글 경합을 순차 처리하도록 설계</strong>
                 <p className="mt-1">
-                  낙관적 락(Optimistic Lock)은 충돌 시 재시도 로직이 복잡해지므로, 단 한 건의 중복 결제도 허용하지 않기 위해 DB 레벨의 강력한 동시성 제어인 비관적 락을 선택했습니다.
+                  판매글을 비관적 락으로 조회한 뒤 같은 트랜잭션 안에서 판매 상태, 본인 구매 여부, 포인트 잔액을 검증하고 포인트 이동과 판매 상태 변경을 처리했습니다. 동시 구매 경합을 줄이기 위한 설계이며, 대규모 트래픽에서의 처리량과 락 대기 시간은 부하 테스트로 추가 검증이 필요합니다.
                 </p>
                 <CodeBlock label="SaleRepository.java">
                   {`@Lock(LockModeType.PESSIMISTIC_WRITE)
-@Query("SELECT s FROM Sale s WHERE s.id = :saleId")
-Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
+@Query("SELECT s FROM Sale s WHERE s.id = :id")
+Optional<Sale> findByIdWithLock(@Param("id") Long id);`}
                 </CodeBlock>
               </div>
             </div>
@@ -382,19 +382,19 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
               <div>
                 <strong>4.1 Redis GEOSEARCH로 반경 검색</strong>
                 <p className="mt-1">
-                  위치 데이터를 인메모리 기반 Redis로 분리했습니다. <code>GEOSEARCH</code>로 반경 5km 내 매장만 조회하여 원거리 매장 연산 자체를 제거했습니다.
+                  거리순 검색에서는 Spring Data Redis의 <code>opsForGeo().search(...)</code>로 반경 5km 내 매장만 조회합니다. 위치 검색의 거리 계산 범위를 Redis GEO 캐시 계층으로 분리했으며, 응답 시간의 정량 개선 수치는 별도로 측정하지 않았습니다.
                 </p>
               </div>
               <div>
                 <strong>4.2 Pipeline을 활용한 일괄 조회</strong>
                 <p className="mt-1">
-                  조회된 매장들의 브랜드명을 가져올 때, Redis Pipeline을 활용하여 N번 왕복 대신 1회 요청으로 네트워크 통신을 최소화했습니다.
+                  조회된 매장들의 브랜드명을 가져올 때 Redis Pipeline으로 다건 조회를 묶어 네트워크 왕복을 줄였습니다.
                 </p>
               </div>
               <div>
-                <strong>4.3 인메모리 정렬로 DB GROUP BY 제거</strong>
+                <strong>4.3 브랜드별 최소 거리 계산 및 정렬</strong>
                 <p className="mt-1">
-                  애플리케이션 단에서 브랜드별 최소 거리 Map을 생성하고 메모리에서 정렬하는 경량 처리 방식으로 개선하여 DB 부하를 차단했습니다.
+                  애플리케이션에서 브랜드별 최소 거리 Map을 생성하고 거리순으로 정렬합니다. 검색 전용 인덱스와 부하 테스트는 향후 확장 과제입니다.
                 </p>
               </div>
             </div>
@@ -405,13 +405,13 @@ Optional<Sale> findByIdWithLock(@Param("saleId") Long saleId);`}
           content: (
             <ul className="list-disc list-inside space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-md">
               <li>
-                <strong>결제 무결성 확보:</strong> 비관적 락으로 트랜잭션 경합 시 발생할 수 있는 중복 결제를 원천 차단했습니다.
+                <strong>동시 구매 경합 제어:</strong> 비관적 락과 구매 트랜잭션으로 동일 판매글에 대한 동시 구매 경합을 순차 처리하도록 설계했습니다.
               </li>
               <li>
-                <strong>위치 검색 병목 해소:</strong> 전체 매장 풀스캔에서 반경 내 매장만 인메모리로 조회 및 정렬하도록 개선하여 검색 응답 속도를 극대화했습니다.
+                <strong>위치 검색 범위 분리:</strong> Redis GEO Search로 반경 내 매장을 조회하고, 브랜드별 최소 거리를 메모리에서 계산·정렬하도록 구성했습니다.
               </li>
               <li>
-                <strong>네트워크 최적화:</strong> Pipeline 적용으로 캐시 서버와의 통신 오버헤드를 1회로 단축시켰습니다.
+                <strong>다건 조회 묶음 처리:</strong> Pipeline으로 브랜드명 다건 조회를 묶어 Redis 왕복을 줄였습니다. 정량 성능 검증은 추후 과제입니다.
               </li>
             </ul>
           ),
