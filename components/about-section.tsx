@@ -131,10 +131,10 @@ export default function AboutSection() {
                     <Badge variant="secondary" className="text-xs">14기 Java 전공</Badge>
                   </div>
                   <p className="text-sm text-slate-500 mb-2 flex items-center gap-1">
-                    <CalendarDays className="h-3 w-3" /> 2025.07 ~ 진행 중
+                    <CalendarDays className="h-3 w-3" /> 2025.07 ~ 2026.07 수료
                   </p>
                   <p className="text-slate-600 dark:text-slate-400">
-                    Java 전공 트랙으로 알고리즘, 웹 개발, 프로젝트 기반 학습을 진행하고 있습니다.
+                    Java 전공 트랙으로 알고리즘, 웹 개발, 프로젝트 기반 학습을 수료했습니다.
                   </p>
                 </div>
 
