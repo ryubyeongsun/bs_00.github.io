@@ -17,17 +17,15 @@ import Image from "next/image"
 
 function RenderFormattedText({ text, className = "" }: { text: string; className?: string }) {
   return (
-    <div className={`space-y-2 text-[13px] leading-relaxed break-keep ${className}`}>
-      {text.split('\n').map((line, idx) => {
-        if (line.trim() === '') return <div key={idx} className="h-0.5" />;
-        // "1.", "2.", "→" 등으로 시작하는 문장은 들여쓰기를 약간 조정하거나 그냥 렌더링해도 깔끔합니다.
-        const isBullet = line.trim().startsWith("→") || line.trim().startsWith(":");
-        return (
-          <p key={idx} className={`m-0 ${isBullet ? 'pl-2 text-zinc-500' : ''}`}>
-            {line}
-          </p>
-        );
-      })}
+    <div className={`space-y-5 text-[15px] sm:text-base leading-[1.85] break-keep [overflow-wrap:anywhere] ${className}`}>
+      {text.split(/\n\s*\n/).map((paragraph, idx) => (
+        <div key={idx} className="space-y-1.5">
+          {paragraph.split('\n').map((line, lineIdx) => {
+            const isHeading = /^[①-⑳]|^\d+\.\s/.test(line.trim())
+            return <p key={lineIdx} className={`m-0 ${isHeading ? "font-semibold text-zinc-200" : ""}`}>{line}</p>
+          })}
+        </div>
+      ))}
     </div>
   )
 }
@@ -41,8 +39,8 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
           핵심 문제 해결 보기
         </Button>
       </DialogTrigger>
-      <DialogContent className="!max-w-5xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-[#0a0a0a] border-zinc-800">
-        <DialogHeader className="p-6 pb-4 border-b border-zinc-800">
+      <DialogContent className="!max-w-[1440px] w-[96vw] h-[94dvh] max-h-[94dvh] flex flex-col p-0 overflow-hidden bg-[#0a0a0a] border-zinc-800">
+        <DialogHeader className="p-4 sm:px-8 sm:py-5 border-b border-zinc-800">
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="outline" className="rounded-sm bg-zinc-900 border-zinc-700 text-zinc-300">
               Problem Solving
@@ -56,24 +54,24 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          <div className="grid gap-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-8 space-y-8">
+          <div className="grid gap-8">
             {logs.map((ps, i) => (
-              <div key={i} className="p-6 rounded-xl border border-zinc-800 bg-[#111111] flex flex-col xl:flex-row gap-6">
+              <div key={i} className="p-4 sm:p-7 rounded-xl border border-zinc-800 bg-[#111111] flex flex-col xl:flex-row gap-8 xl:gap-10 items-start">
                 
                 {/* Left: 텍스트 흐름 (문제 -> 원인 -> 해결 -> 결과) */}
-                <div className="flex-1 space-y-5">
-                  <h4 className="font-bold text-zinc-100 text-[15px] border-b border-zinc-800 pb-3 mb-4">{ps.title}</h4>
+                <div className="w-full min-w-0 flex-1 space-y-7">
+                  <h4 className="font-bold text-zinc-100 text-lg leading-snug break-keep border-b border-zinc-800 pb-3 mb-4">{ps.title}</h4>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-6">
                     <div className="space-y-2">
-                      <h5 className="text-[12px] font-bold text-red-400 flex items-center gap-1.5">
+                      <h5 className="text-sm font-bold text-red-400 flex items-center gap-1.5">
                         <span className="bg-red-950 px-1.5 py-0.5 rounded text-red-400">🚨</span> 문제 상황
                       </h5>
                       <RenderFormattedText text={ps.problem} className="text-zinc-400" />
                     </div>
                     <div className="space-y-2">
-                      <h5 className="text-[12px] font-bold text-orange-400 flex items-center gap-1.5">
+                      <h5 className="text-sm font-bold text-orange-400 flex items-center gap-1.5">
                         <span className="bg-orange-950 px-1.5 py-0.5 rounded text-orange-400">🔎</span> 원인 분석
                       </h5>
                       <RenderFormattedText text={ps.cause} className="text-zinc-400" />
@@ -81,14 +79,15 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                   </div>
 
                   <div className="bg-blue-950/20 border border-blue-900/50 p-4 rounded-lg space-y-2">
-                    <h5 className="text-[12px] font-bold text-blue-400 flex items-center gap-1.5">
+                    <h5 className="text-sm font-bold text-blue-400 flex items-center gap-1.5">
                       <span className="bg-blue-900 px-1.5 py-0.5 rounded text-blue-300">💡</span> 해결 방법
                     </h5>
                     <RenderFormattedText text={ps.solution} className="text-zinc-300 font-medium" />
+
                   </div>
 
                   <div className="bg-green-950/20 border border-green-900/50 p-4 rounded-lg space-y-2">
-                    <h5 className="text-[12px] font-bold text-green-400 flex items-center gap-1.5">
+                    <h5 className="text-sm font-bold text-green-400 flex items-center gap-1.5">
                       <span className="bg-green-900 px-1.5 py-0.5 rounded text-green-300">🏆</span> 결과 및 성과
                     </h5>
                     <RenderFormattedText text={ps.result} className="text-zinc-300 font-medium" />
@@ -97,7 +96,8 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
 
                 {/* Right: Before/After 이미지 플레이스홀더 (조건부 렌더링) */}
                 {ps.hasImage !== false && (
-                  <div className="xl:w-[450px] shrink-0 border border-zinc-800 rounded-xl bg-[#111111] flex flex-col p-4 gap-4 justify-center">
+                  <div className="w-full xl:w-[34%] min-w-0 shrink-0 border border-zinc-800 rounded-xl bg-[#111111] flex flex-col p-4 gap-5 self-start">
+                    {ps.imageNote && <p className="rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs leading-relaxed text-zinc-300">{ps.imageNote}</p>}
                     {ps.customVisual ? (
                       ps.customVisual
                     ) : ps.beforeImage && ps.afterImage ? (
@@ -109,6 +109,7 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                             </span>
                           </div>
                           <div className="rounded-lg border border-red-900/30 overflow-hidden relative">
+                            <a href={typeof ps.beforeImage === "string" ? ps.beforeImage : ps.beforeImage.src} target="_blank" rel="noopener noreferrer" aria-label="개선 전 이미지 크게 보기">
                             <Image
                               src={ps.beforeImage}
                               alt="개선 전"
@@ -116,6 +117,7 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                               height={300}
                               className="w-full h-auto object-cover"
                             />
+                            </a>
                           </div>
                         </div>
                         <div className="w-full border-t border-zinc-800 border-dashed my-1" />
@@ -126,6 +128,7 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                             </span>
                           </div>
                           <div className="rounded-lg border border-green-900/30 overflow-hidden relative">
+                            <a href={typeof ps.afterImage === "string" ? ps.afterImage : ps.afterImage.src} target="_blank" rel="noopener noreferrer" aria-label="개선 후 이미지 크게 보기">
                             <Image
                               src={ps.afterImage}
                               alt="개선 후"
@@ -133,6 +136,7 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                               height={300}
                               className="w-full h-auto object-cover"
                             />
+                            </a>
                           </div>
                         </div>
                       </>

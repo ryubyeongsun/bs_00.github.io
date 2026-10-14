@@ -1,25 +1,25 @@
 import { CodeBlock } from "@/components/troubleshooting-dialog"
 import Image from "next/image"
+import project1Before from "@/public/projects/project1-before.png"
+import project1After from "@/public/projects/project1-after.png"
+import project1Arch from "@/public/projects/project1-architecture-corrected.png"
 import project1 from "@/public/projects/project1-thumbnail.png"
 import project2 from "@/public/projects/project2-thumbnail.png"
 import project3 from "@/public/projects/project3-thumbnail.png"
-import project1Arch from "@/public/projects/project1-architecture.png"
 import project2Arch from "@/public/projects/project2-architecture.png"
 import project3Arch from "@/public/projects/project3-architecture.png"
-import project1Before from "@/public/projects/project1-before.png"
-import project1After from "@/public/projects/project1-after.png"
 import { ConyArchitectureCompare } from "@/components/cony-architecture-compare"
 import { DuckchiArchitectureCompare } from "@/components/duckchi-architecture-compare"
 
 export const PROJECTS = [
   {
     id: 1,
-    title: "Diet Coach (아보핏) — AI 기반 헬스케어 서비스",
+    title: "AvoFit (Diet Coach) — AI 식단·장보기 관리 서비스",
     description:
-      "TDEE 기반 AI 맞춤 식단 자동 생성 및 BMI 연동 3D 체형 시각화 헬스케어 플랫폼",
+      "AI 식단을 실제 장보기 상품과 연결하고, BMI 단계별 3D 아바타를 보여주는 식단 관리 서비스",
     period: "2025.11 ~ 2025.12 (4주)",
-    team: "2명 (풀스택 1명, 풀스택 1명)",
-    role: "Backend Developer (서버/인프라 전담)",
+    team: "2명 (풀스택 2명)",
+    role: "Full-Stack Developer (장보기·3D 웹 연동)",
     techStack: [
       "Java 17",
       "Spring Boot 3.5",
@@ -27,223 +27,98 @@ export const PROJECTS = [
       "MySQL",
       "Vue.js 3",
       "Three.js",
+      "CompletableFuture (후속 개선)",
     ],
     contribution: {
-      percentage: "50%",
-      summary: "백엔드 전체 아키텍처 설계, AI 파이프라인 최적화, 배포 및 인프라 구축",
+      summary:
+        "풀스택 개발자로서 장보기 상품 추천 백엔드와 Three.js 3D 아바타 초기 웹 연동을 담당했습니다. 검색어 정규화·상품 후보 평가·예산 검증을 적용하고, 상품의 포장 용량을 바탕으로 권장 구매 개수를 계산했습니다. 프로젝트 종료 후에는 기존 비동기 생성에 전용 Executor를 도입하고, 나머지 구간을 하나의 작업에서 순차 처리하도록 개선했습니다.",
       details: [
-        { title: "AI 식단 자동 생성 API", percentage: 30, description: "TDEE 기반 목표별 식단 데이터 계산 및 비동기 처리" },
-        { title: "11번가 장보기 API 연동", percentage: 10, description: "식재료 키워드 정규화 및 Mock Fallback 적용" },
-        { title: "예산 필터링 알고리즘", percentage: 10, description: "추정 단가 기반 내림차순 정렬을 통한 예산 초과 제어" }
+        {
+          title: "장보기 상품 추천",
+          description:
+            "식재료를 11번가 상품과 연결하고, 검색어 정규화·필터링·예산·용량·재료명 적합도 평가로 추천 흐름 개선",
+        },
+        {
+          title: "구매 수량 계산",
+          description:
+            "상품명에서 포장 용량을 파싱하고, 식재료 총 필요량과 비교해 권장 구매 개수 계산",
+        },
+        {
+          title: "3D 웹 연동 · 후속 개선",
+          description:
+            "BMI 단계별 GLB 모델을 Three.js로 초기 웹 연동. 프로젝트 종료 후인 2026.08.15에는 식단 생성의 백그라운드 처리 구조 개선",
+        },
       ],
     },
     teamComposition: [
-      { role: "풀스택", count: 1, isMe: false, tasks: "Vue.js 모바일 UI/UX, Three.js 3D 체형 시각화" },
-      { role: "풀스택 (백엔드 전담)", count: 1, isMe: true, tasks: "AI 식단 생성 API, 장보기 연동, 예산 필터링, 비동기 파이프라인" }
+      {
+        role: "풀스택 (팀원)",
+        count: 1,
+        isMe: false,
+        tasks:
+          "식단·대시보드 등 서비스 기능과 Vue.js 화면 개발, 3D 관련 코드의 후속 수정",
+      },
+      {
+        role: "풀스택 (본인)",
+        count: 1,
+        isMe: true,
+        tasks:
+          "장보기 상품 추천·구매 수량 계산, Three.js 3D 아바타 초기 웹 연동, 프로젝트 종료 후 식단 비동기 개선",
+      },
     ],
     problemSolving: [
       {
         title: "예산 오차 및 엉뚱한 상품 매핑 문제 해결",
-        problem: "1. 예산 오차: AI가 30일 식단 생성 시 재료비 합계가 사용자 예산(30만원)과 크게 차이 발생\n→ 예산 기반 서비스인데 예산이 안 맞음\n\n2. 상품 매핑 오류: AI가 식단 재료명(“닭가슴살 100g x 30팩”)을 그대로 11번가에 검색\n→ 계란박스·대용량 묶음 등 엉뚱한 상품 노출",
-        cause: "1. AI API는 식재료 종류만 반환\n: 시장 단가를 모르기 때문에 예산 파라미터를 전달해도 총 재료비 합계 제어 불가\n\n2. 재료명에 수량·단위·포장 정보 혼재\n: 그대로 검색어 사용 시 노이즈 발생 → 원하는 단품 상품 연결 실패",
-        solution: "1. filterItemsToBudget() — Greedy Filter\n: 재료를 추정 단가 기준 내림차순 정렬, 예산 초과 시 비싼 항목부터 순차 제거 (허용 범위 : 예산 x 1.15 이내)\n\n2. IngredientQueryNormalizer\n: 수량·단위·불용어 제거 (\"닭가슴살-100g×30팩\" → \"닭가슴살\")\n카테고리 화이트리스트 필터링 → 후보 TopN 스코어링 → 3개 이상 시 AI rerank → 대표 상품 1개 선정",
-        result: "[예산오차] 무제한 초과 → 예산 ±15% 이내로 제어\n[상품 정확도] 엉뚱한 상품 노출 → 키워드 정규화로 매핑 정확도 개선\n[API 안정성] 실패 시 MOCK Fallback으로 서비스 중단 없이 기본 응답 제공",
+        problem: "① 상품 불일치\n재료명에 수량·단위가 섞여 관련 없는 상품이나 대용량 묶음이 검색됐습니다.\n\n② 구매비용 차이\n같은 재료라도 포장 용량과 구매 개수에 따라 실제 예상 비용이 달라졌습니다.",
+        cause: "① 검색 형식 차이\n식단의 재료명과 쇼핑몰 상품명의 표현 방식이 달랐습니다.\n\n② 실제 상품 정보 부재\nAI 식단 생성에는 쇼핑몰의 가격·포장 용량이 반영되지 않아 별도 검증이 필요했습니다.",
+        solution: "① 검색어 정규화\n수량·단위 표현을 제거하고 식품 카테고리로 검색합니다.\n예: “닭가슴살 100g” → “닭가슴살”\n\n② 부적합 상품 제거·후보 평가\n재료명·용량·예산 적합도로 후보를 좁히고, 상위 후보가 3개 이상이면 AI로 상품명의 의미적 적합성을 보완합니다.\n\n③ 권장 구매 개수·비용 검증\n상품명에서 포장 용량을 읽고, 유효한 용량이면 필요량 ÷ 포장 용량을 올림해 구매 개수를 계산합니다. 구매 개수를 반영한 비용도 다시 검증합니다.\n\n④ 전체 예산 검증\n총 예상 구매비용이 예산의 115%를 넘으면 비용이 큰 항목부터 제외합니다.",
+        result: "[상품 연결] 단순 키워드 검색 → 재료 적합성을 검토한 후보 선택\n[구매 단위] 상품 1개 가격 → 포장 용량·구매 개수를 반영한 비용 확인\n[예산 검증] 추천 결과 연결 → 전체 예상 비용을 확인한 뒤 고비용 항목 제외",
         hasImage: true,
         beforeImage: project1Before,
-        afterImage: project1After
+        afterImage: project1After,
+        imageNote: "기존 포트폴리오의 장보기 화면 예시입니다. 표시된 금액·비율은 개별 예시이며, 실측 개선율이나 모든 추천의 예산 준수를 의미하지 않습니다.",
       },
       {
-        title: "AI API 응답 지연 및 타임아웃 해결",
-        problem: "외부 AI API가 식단 생성에 8~10초 소요\n→ 동기 처리 시 브라우저 타임아웃(30초) 임박\n→ 사용자 응답 없음으로 인식\n→ 서비스 이탈 발생",
-        cause: "식단 생성 요청이 동기적으로 처리되어\nAI API 응답이 올 때까지 스레드 블로킹\n클라이언트는 응답 대기 중 아무것도 할 수 없는 상태",
-        solution: "CompletableFuture + 전용 ThreadPoolTaskExecutor 기반 백그라운드 처리\n① 1주차 식단을 우선 생성해 응답에 포함\n② 나머지 주차는 백그라운드에서 생성\n③ 식단 조회 API로 생성 결과를 재확인",
-        result: "[응답 흐름] 1주차 생성 결과를 먼저 제공하고 나머지 생성 작업을 분리\n[자원 제어] Core=5, Max=10, Queue=50 Executor로 백그라운드 작업 수 제한\n[확인 방식] 별도 상태 API 없이 식단 조회 API로 생성 결과 재확인",
-        hasImage: false
-      }
+        title: "식단 비동기 실행 구조 개선 · 프로젝트 종료 후 (2026.08.15)",
+        problem: "첫 7일을 반환한 뒤 나머지를 백그라운드에서 생성하는 구조는 이미 있었습니다.\n→ 공용 풀에서 구간별 작업을 추가로 병렬 실행하고 있어, 실행 자원을 명시적으로 관리할 필요가 있었습니다.",
+        cause: "전용 Executor 없이 CompletableFuture.runAsync를 중첩 호출하고, 내부 구간 작업 전체가 끝나기를 기다리는 구조였습니다.\n→ 외부 AI 호출을 포함한 긴 작업의 실행 자원과 처리 순서를 명확히 할 필요가 있었습니다.",
+        solution: "① 기존 응답 흐름 유지\n첫 7일 식단을 생성해 먼저 반환하는 흐름을 유지합니다.\n\n② 나머지 8~30일 백그라운드 생성\nCompletableFuture에 전용 Executor를 연결합니다. 중첩된 병렬 작업을 제거하고 하나의 백그라운드 작업 안에서 구간별로 순차 생성합니다.\n\n③ 생성 결과 확인\n별도 jobId·상태 API 없이 기존 식단 조회 API를 다시 호출합니다.",
+        result: "[응답 흐름] 첫 7일 우선 반환 유지\n[처리 구조] 중첩 병렬 작업 → 단일 백그라운드 작업 내 순차 처리\n[실행 자원] Core 5 / Max 10 / Queue 50의 전용 Executor로 작업 자원 제한\n[작업 시점] 4주 프로젝트 이후인 2026.08.15 후속 리팩토링",
+        hasImage: false,
+      },
     ],
     situation:
-      "운동과 식단 관리를 병행하려는 사용자들이 과학적 근거(TDEE)에 기반한 맞춤 식단을 추천받기 어려운 문제가 있었습니다. 기존 식단 앱은 단순 칼로리 계산에 그쳐, 개인별 대사량을 반영한 영양소 최적화와 체형 변화의 시각적 피드백이 부족했습니다.",
-    task: "사용자의 신체 정보를 기반으로 Harris-Benedict 공식으로 TDEE를 분석하고, AI가 30일분 맞춤 식단을 자동 생성하는 백엔드 시스템을 구축해야 했습니다. 특히 외부 AI API의 응답 지연(8~10초) 문제를 해결하여 사용자 경험을 보장하는 것이 핵심 과제였습니다.",
-    action: `1. CompletableFuture + 전용 Executor 백그라운드 처리: 1주차 식단은 우선 생성해 응답에 포함하고, 나머지 주차는 CompletableFuture.runAsync(..., mealTaskExecutor)로 분리. Core=5, Max=10, Queue=50의 ThreadPoolTaskExecutor로 백그라운드 작업 수를 제어하고, 식단 조회 API로 생성 결과를 재확인.
-2. JWT RTR 인증: Access Token(30분) + Refresh Token(7일)을 활용하되, Refresh Token도 사용 시 새로 발급하는 Rotation 방식을 적용하여 토큰 탈취 위험을 최소화.
-3. TDEE 기반 식단 추천 로직: 나이·성별·체중·신장·활동량으로 기초대사량(BMR) 계산 후 목표(다이어트/유지/증량)에 맞춘 칼로리와 탄·단·지 비율을 산출하여 AI에게 전달.
-4. 11번가 API 장보기 연동: 추천 식단의 식재료를 11번가 API로 검색·링크하는 기능 구현. 외부 API 장애 시에도 서비스가 중단되지 않도록 Mock Fallback을 적용.`,
+      "사용자의 신체정보와 목표에 맞춘 AI 식단·장보기 관리 서비스입니다. 목표 칼로리에 따라 식단을 생성하고 필요한 식재료를 실제 쇼핑 상품에 연결하며, BMI 단계별 3D 아바타로 체형을 시각화합니다.",
+    task: "주요 기능: Mifflin–St Jeor BMR·활동계수 기반 목표 칼로리 계산, AI 맞춤 식단, 11번가 상품 추천·구매 수량 계산, BMI 연동 3D 아바타, Access/Refresh Token 분리 및 Refresh Token Rotation 인증",
+    action:
+      "프로젝트 기간: 검색어 정규화, 부적합 상품 필터링, 예산·용량·재료명 적합도 기반 후보 평가, AI 의미 판단 보완과 최종 구매비용 재검증을 통해 장보기 상품 추천을 개선했습니다. 상품명 용량 파싱과 권장 구매 개수 계산을 구현했습니다.\n3D 초기 연동: 외부 도움으로 전달받은 avoLV1~avoLV5 GLB 자산을 프로젝트에 추가하고, Three.js GLTFLoader 렌더링과 BMI Level에 따른 모델 선택을 연결했습니다. 3D 모델링 자체와 이후 팀원의 코드 수정은 본인 단독 구현 범위에 포함하지 않습니다.\n프로젝트 종료 후(2026.08.15): 첫 7일 응답 이후 나머지 기간을 전용 Executor의 단일 백그라운드 작업에서 순차 생성하도록 개선했습니다.",
     result:
-      "🏆 SSAFY 14기 최종 프로젝트 우수상 수상. 1주차 식단을 우선 제공하고 나머지 생성 작업을 백그라운드로 분리해, 장시간 AI 호출과 요청 처리 흐름을 분리했습니다. 전용 Executor로 동시에 실행되는 백그라운드 작업 수를 제어했습니다.",
+      "장보기 추천에 재료명·예산·용량 검증과 권장 구매 개수 계산을 반영하고, BMI 단계별 3D 아바타의 초기 웹 연동을 담당했습니다. 팀 프로젝트로 SSAFY 14기 최종 페어(관통) 프로젝트 우수상을 수상했습니다.\n프로젝트 종료 후인 2026.08.15에는 기존 비동기 생성에 전용 Executor를 도입하고 구간별 순차 처리로 정리하는 후속 리팩토링을 진행했습니다.",
     retrospective: {
       regrets: [
-        "상품 파싱 실패 케이스 일부 잔존 (수량/단위 혼재 패턴 완전 미해결)",
-        "단위 테스트 미작성으로 인해 리팩토링 시 회귀 검증이 불가했던 점",
+        "상품명의 수량·단위·묶음 표현에 대한 파싱과 추천 예외 케이스가 남아 있음",
+        "핵심 상품 추천·비동기 흐름의 회귀 테스트 부족",
+        "Frontend와 Backend에 BMI Level 계산이 중복되고 일부 경계 기준과 반올림 방식이 다름",
       ],
       improvements: [
-        "AI rerank 후보 품질 강화 (하드필터 + 스코어링 먼저 계산)",
-        "파싱 정규화 화이트리스트 확장 및 개선",
-        "Redis 캐싱을 도입하여 11번가 커머스 API 호출 최소화",
-        "jobId 기반 상태 관리와 전용 polling API를 추가해 생성 진행 상태를 명확히 제공",
+        "상품 추천·용량 파싱·예산 검증의 경계 사례와 비동기 실패 흐름에 대한 회귀 테스트 보강",
+        "Backend에서 BMI/Level 정책을 단일화하고 Frontend는 전달받은 Level에 따른 렌더링을 담당하도록 개선",
+        "현재 ConcurrentHashMap 기반 로컬 캐시는 다중 인스턴스 환경에서 Redis 같은 공유 캐시로 전환 검토",
+        "작업별 진행 상태 API와 실패·재시도 정책을 추가해 생성 중인 식단의 상태를 명확히 제공",
       ],
       lesson:
-        "단순히 외부 API를 연동하는 것을 넘어, 실패·타임아웃·사용자 대기 상태까지 고려한 전체 흐름(Flow) 설계가 훨씬 중요하다는 것을 깨달았습니다. 기술적인 성능 개선만큼이나 예외 상황에서의 안정성과 UX 방어가 필수적이라는 점을 배웠습니다.",
+        "상품 추천은 재료명뿐 아니라 포장 용량·구매 개수·예상 비용까지 검증해야 합니다. AI의 의미 판단도 규칙 기반 검증과 함께 사용해야 한다는 점을 배웠습니다.",
     },
     image: project1,
     architectureImage: project1Arch,
+    architectureCaption: "서비스 전체 아키텍처 · 비동기 처리는 프로젝트 종료 후 개선한 구조입니다.",
     githubLink: "https://github.com/ryubyeongsun/diet_coach_PJ",
     techReasons: [
-      { label: "MyBatis", desc: "JPA 대신 동적 SQL과 resultMap을 활용하여 실사용 흐름에 맞는 복잡한 조건 쿼리를 직접 제어하기 위해 선택했습니다." },
-      { label: "JWT RTR", desc: "일반 JWT 대신 Refresh Token 사용 시마다 토큰을 즉각 폐기/무효화하여 탈취 및 악용을 구조적으로 차단했습니다." },
-      { label: "CompletableFuture + Executor", desc: "기존 Spring MVC 구조를 유지하면서 CompletableFuture.runAsync()에 전용 ThreadPoolTaskExecutor를 연결해 장시간 AI 생성 작업을 백그라운드로 분리했습니다." }
+      { label: "MyBatis", desc: "SQL 매퍼를 통해 식단·식재료 데이터를 조회·저장하고, 조회 결과를 Java 객체로 매핑하는 데 사용했습니다." },
+      { label: "11번가 API", desc: "식단의 식재료를 실제 구매 가능한 상품과 연결하기 위해 사용했습니다. 재료명·용량·예산으로 후보를 평가하고, AI로 의미적 적합성을 보완한 뒤 구매비용을 검증했습니다." },
+      { label: "Three.js · GLTFLoader", desc: "BMI Level에 맞는 GLB 모델을 브라우저에서 보여주기 위해 사용했습니다. 외부 도움으로 받은 모델링 자산의 초기 웹 연동을 담당했으며, 이후 팀원의 코드 수정도 반영됐습니다." },
+      { label: "CompletableFuture + 전용 Executor", desc: "프로젝트 종료 후(2026.08.15), 기존 CompletableFuture에 전용 Executor를 연결해 실행 자원을 관리했습니다. 첫 7일 우선 반환은 유지하고, 나머지는 중첩 병렬 실행 대신 한 작업 안에서 순차 생성하도록 바꿨습니다." },
     ],
-    troubleshooting: {
-      title: "AI 식단 파이프라인 지연 및 커머스 연동 정합성 문제 해결",
-      date: "2025-12",
-      environment:
-        "Spring Boot 3.5.8, Java 17, MyBatis 3.0.5, MySQL 8.0, Vue.js 3.5.24",
-      sections: [
-        {
-          title: "1. [Problem 1] 식재료 예산 오차 및 엉뚱한 상품 매핑",
-          content: (
-            <ul className="list-disc list-inside space-y-1">
-              <li>
-                <strong>예산 오차:</strong> AI는 식재료 종류만 반환하여 11번가 검색 시 사용자가 설정한 예산(30만 원)을 크게 초과(약 42만 원)하는 문제 발생.
-              </li>
-              <li>
-                <strong>상품 매핑 오류:</strong> "닭가슴살-100g x 30팩" 같은 구체적인 AI 추천 문자열을 그대로 검색 시 노이즈가 발생해 '계란 박스' 등 엉뚱한 상품이 노출됨.
-              </li>
-            </ul>
-          ),
-        },
-        {
-          title: "2. [Resolution 1] 정규화 필터 및 예산 최적화 (Greedy Filter)",
-          content: (
-            <div className="space-y-4">
-              <div>
-                <strong>2.1 IngredientQueryNormalizer (키워드 정규화)</strong>
-                <p className="mt-1">
-                  수량/단위/불용어를 제거("닭가슴살-100g x 30팩" → "닭가슴살")하고 카테고리 화이트리스트 필터링을 적용해 매핑 정확도를 높였습니다.
-                </p>
-              </div>
-              <div>
-                <strong>2.2 filterItemsToBudget() - Greedy Filter</strong>
-                <p className="mt-1">
-                  검색된 재료들을 추정 단가 기준으로 내림차순 정렬 후, 예산 초과 시 가장 비싼 항목부터 순차적으로 제거하여 예산의 ±15% 이내로 제어했습니다.
-                </p>
-              </div>
-              <div>
-                <strong>2.3 Mock Fallback 패턴 적용</strong>
-                <p className="mt-1">
-                  11번가 API 장애 발생 시 서비스가 중단되지 않도록 사전에 준비된 Mock Data를 반환하는 Fallback 로직을 적용해 안정성을 보장했습니다.
-                </p>
-              </div>
-            </div>
-          ),
-        },
-        {
-          title: "📸 Before / After 비교",
-          content: (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                      BEFORE
-                    </span>
-                    <span className="text-sm text-muted-foreground">예산 143% 초과 (427,800원)</span>
-                  </div>
-                  <div className="rounded-lg border border-red-200 dark:border-red-800/50 overflow-hidden">
-                    <Image
-                      src={project1Before}
-                      alt="개선 전: 예산 143% 초과, 대용량 상품 매핑 오류"
-                      className="w-full h-auto"
-                      placeholder="blur"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    AI 추천 문자열을 그대로 검색 → 대용량 묶음 상품이 매핑되어 예산 대폭 초과
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                      AFTER
-                    </span>
-                    <span className="text-sm text-muted-foreground">예산 96% 적중 (289,400원)</span>
-                  </div>
-                  <div className="rounded-lg border border-green-200 dark:border-green-800/50 overflow-hidden">
-                    <Image
-                      src={project1After}
-                      alt="개선 후: 예산 96% 적중, 정확한 단품 상품 매핑"
-                      className="w-full h-auto"
-                      placeholder="blur"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    정규화 + Greedy Filter 적용 → 단품 상품 정확 매핑, 예산 ±15% 이내 제어
-                  </p>
-                </div>
-              </div>
-            </div>
-          ),
-        },
-        {
-          title: "3. [Problem 2] AI 식단 생성 API 타임아웃",
-          content: (
-            <ul className="list-disc list-inside space-y-1">
-              <li>
-                <strong>현상:</strong> 30일치 식단(90끼) 생성에 8~10초가 소요되어, 동기 처리 시 브라우저 타임아웃(30초)에 임박하거나 스레드가 블로킹됨.
-              </li>
-              <li>
-                <strong>영향:</strong> 클라이언트는 대기 상태에 빠지고, 사용자는 응답 없음으로 인식하여 이탈 발생.
-              </li>
-            </ul>
-          ),
-        },
-        {
-          title: "4. [Resolution 2] CompletableFuture 기반 백그라운드 처리",
-          content: (
-            <div className="space-y-4">
-              <div>
-                <strong>4.1 전용 Executor를 사용한 생성 작업 분리</strong>
-                <p>
-                  전체 시스템을 WebFlux로 전환하지 않고 기존 Spring MVC 구조를 유지했습니다. 1주차 식단은 우선 생성하고, 나머지 주차 생성 작업은 <code>CompletableFuture.runAsync(..., mealTaskExecutor)</code>로 분리했습니다. Core=5, Max=10, Queue=50의 전용 <code>ThreadPoolTaskExecutor</code>를 사용해 백그라운드 작업 수를 제어했습니다.
-                </p>
-                <CodeBlock label="MealPlanServiceImpl.java">
-                  {`CompletableFuture.runAsync(() -> {
-    try {
-        generateRemainingWeeksParallel(mealPlan, allDays, basePayload,
-                targetKcalPerDay, mealsPerDay);
-    } catch (Exception e) {
-        log.error("[MealPlan] Background generation failed for planId={}",
-                mealPlan.getId(), e);
-    }
-}, mealTaskExecutor);`}
-                </CodeBlock>
-              </div>
-              <div>
-                <strong>4.2 생성 결과 재확인 및 확장 방향</strong>
-                <p>
-                  현재는 별도 jobId 또는 상태 API 없이 식단 조회 API를 다시 호출해 생성 결과를 확인합니다. <code>@Async</code> 어노테이션 메서드가 아니라 <code>CompletableFuture.runAsync(..., mealTaskExecutor)</code>로 작업을 분리한 구조이며, 향후 jobId 기반 상태 API, polling, 메시지 큐 구조로 확장할 수 있습니다.
-                </p>
-              </div>
-            </div>
-          ),
-        },
-        {
-          title: "5. 종합 성과 (Results)",
-          content: (
-            <ul className="list-disc list-inside space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-md">
-              <li>
-                <strong>예산 및 정확도 제어:</strong> 예산 오차 무제한 초과를 ±15% 이내로 제어하고, 정규화로 엉뚱한 상품 노출을 차단했습니다.
-              </li>
-              <li>
-                <strong>생성 흐름 분리:</strong> 1주차 식단을 우선 생성하고 나머지 주차 생성 작업을 백그라운드로 분리했습니다. 별도 상태 API와 polling은 향후 개선 과제입니다.
-              </li>
-              <li>
-                <strong>안정적인 커머스 연동:</strong> API 실패 시 Mock Fallback을 통해 서비스 중단 없이 유연하게 대처했습니다.
-              </li>
-            </ul>
-          ),
-        },
-      ],
-    },
   },
   {
     id: 2,

@@ -24,7 +24,7 @@ export interface TeamMember {
 
 export interface ContributionDetail {
   title: string
-  percentage: number
+  percentage?: number
   description: string
 }
 
@@ -38,11 +38,12 @@ export interface ProblemSolving {
   hasImage?: boolean
   beforeImage?: string | StaticImageData
   afterImage?: string | StaticImageData
+  imageNote?: string
   customVisual?: React.ReactNode
 }
 
 export interface ProjectContribution {
-  percentage: string
+  percentage?: string
   summary: string
   details: ContributionDetail[]
 }
@@ -71,9 +72,10 @@ export interface Project {
   retrospective?: ProjectRetrospective
   image?: string | StaticImageData
   architecture?: string | StaticImageData
-  architectureImage?: string
+  architectureCaption?: string
+  architectureImage?: string | StaticImageData
   techReasons?: { label: string; desc: string }[]
-  troubleshooting?: TroubleshootingLog
+  troubleshooting?: { title: string; date: string; environment: string; sections: { title: string; content: React.ReactNode }[] }
   githubLink?: string
   link?: string
 }
@@ -159,11 +161,14 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                   </div>
                   {project.architectureImage && (
                     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden shadow-xl mt-4">
+                      <a href={typeof project.architectureImage === "string" ? project.architectureImage : project.architectureImage.src} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} 아키텍처 크게 보기`}>
                       <img
                         src={typeof project.architectureImage === "string" ? project.architectureImage : project.architectureImage.src}
                         alt={`${project.title} Architecture`}
                         className="w-full h-auto object-cover"
                       />
+                      </a>
+                      {project.architectureCaption && <p className="p-3 text-xs leading-relaxed text-zinc-400">{project.architectureCaption}</p>}
                     </div>
                   )}
                 </div>
@@ -176,11 +181,11 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                 <div className="grid gap-3">
                   {/* Overview */}
                   <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111] shadow-sm">
-                    <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                    <h4 className="font-bold text-white mb-3 flex flex-wrap items-center gap-2">
                       <Badge className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800 border-none text-xs rounded-sm px-2">Overview</Badge>
                       프로젝트 개요 및 목표
                     </h4>
-                    <p className="text-[13px] leading-relaxed whitespace-pre-line text-zinc-400">
+                    <p className="text-[15px] leading-[1.8] break-keep whitespace-pre-line text-zinc-400">
                       {project.situation}{"\n\n"}{project.task}
                     </p>
                   </div>
@@ -188,11 +193,11 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                   {/* Role & Contribution */}
                   {project.contribution && (
                     <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111] shadow-sm">
-                      <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                      <h4 className="font-bold text-white mb-3 flex flex-wrap items-center gap-2">
                         <Badge className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800 border-none text-xs rounded-sm px-2">Role & Contribution</Badge>
                         담당 역할 및 기여도
                       </h4>
-                      <p className="text-[13px] font-medium text-zinc-300">
+                      <p className="text-[15px] leading-[1.8] break-keep text-zinc-300">
                         {project.contribution.summary}
                       </p>
                     </div>
@@ -201,13 +206,13 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                   {/* Tech Stack */}
                   {project.techReasons && (
                     <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111] shadow-sm">
-                      <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                      <h4 className="font-bold text-white mb-3 flex flex-wrap items-center gap-2">
                         <Badge className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800 border-none text-xs rounded-sm px-2">Tech Stack</Badge>
                         사용 기술 및 도입 이유
                       </h4>
                       <ul className="space-y-2">
                         {project.techReasons.map((tech, i) => (
-                          <li key={i} className="text-[13px]">
+                          <li key={i} className="text-[15px] leading-[1.8] break-keep">
                             <span className="font-bold text-zinc-200 mr-2">{tech.label}:</span>
                             <span className="text-zinc-400 leading-relaxed">{tech.desc}</span>
                           </li>
@@ -258,9 +263,11 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                   <div className="flex-1 space-y-3">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                       개인 기여도 분석
+                      {project.contribution.percentage && (
                       <Badge variant="outline" className="text-[11px] bg-blue-950/30 border-blue-900 text-blue-400 px-2 h-5">
                         전체 기여도 : {project.contribution.percentage}
                       </Badge>
+                      )}
                     </h3>
                     <div className="p-6 rounded-xl border border-zinc-800 bg-[#111111] space-y-6">
                       {project.contribution.details.map((detail, i) => (
@@ -271,8 +278,8 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                               {detail.title}
                             </span>
                           </div>
-                          <Progress value={100} className="h-1 bg-zinc-800 [&>div]:bg-blue-600/70" />
-                          <p className="text-[11px] text-zinc-500 mt-1">{detail.description}</p>
+                          {detail.percentage !== undefined && <Progress value={100} className="h-1 bg-zinc-800 [&>div]:bg-blue-600/70" />}
+                          <p className="text-sm leading-relaxed text-zinc-400 mt-1">{detail.description}</p>
                         </div>
                       ))}
                     </div>
