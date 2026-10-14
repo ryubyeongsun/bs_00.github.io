@@ -66,7 +66,7 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
                 
                 {/* Left: 텍스트 흐름 (문제 -> 원인 -> 해결 -> 결과) */}
                 <div className="w-full min-w-0 max-w-[72ch] flex-1 space-y-5">
-                  <h4 className="font-bold text-zinc-100 text-lg leading-snug break-keep border-b border-zinc-800 pb-3 mb-4">{ps.title}</h4>
+                  <h4 className="font-bold text-zinc-100 text-xl sm:text-2xl leading-snug tracking-tight break-keep border-b border-zinc-800 pb-4 mb-5">{ps.title}</h4>
                   
                   <div className="grid grid-cols-1 gap-5">
                     <div className="space-y-3 rounded-lg border border-rose-900/30 border-l-2 border-l-rose-400/70 bg-rose-950/10 p-4 sm:p-5">
