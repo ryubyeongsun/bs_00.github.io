@@ -15,14 +15,19 @@ import { BookOpen, Terminal } from "lucide-react"
 import { ProblemSolving } from "./project-detail-dialog"
 import Image from "next/image"
 
-function RenderFormattedText({ text, className = "" }: { text: string; className?: string }) {
+function RenderFormattedText({ text, className = "", accent = "text-zinc-100" }: { text: string; className?: string; accent?: string }) {
   return (
-    <div className={`space-y-5 text-[15px] sm:text-base leading-[1.85] break-keep [overflow-wrap:anywhere] ${className}`}>
+    <div className={`space-y-4 text-[15px] sm:text-base leading-[1.8] break-keep [overflow-wrap:anywhere] ${className}`}>
       {text.split(/\n\s*\n/).map((paragraph, idx) => (
         <div key={idx} className="space-y-1.5">
           {paragraph.split('\n').map((line, lineIdx) => {
             const isHeading = /^[①-⑳]|^\d+\.\s/.test(line.trim())
-            return <p key={lineIdx} className={`m-0 ${isHeading ? "font-semibold text-zinc-200" : ""}`}>{line}</p>
+            const label = line.match(/^\[([^\]]+)\]\s*(.*)$/)
+            return (
+              <p key={lineIdx} className={`m-0 ${isHeading ? `font-semibold ${accent}` : ""}`}>
+                {label ? <><strong className={`mr-2 font-semibold ${accent}`}>{label[1]}</strong>{label[2]}</> : line}
+              </p>
+            )
           })}
         </div>
       ))}
@@ -39,7 +44,7 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
           핵심 문제 해결 보기
         </Button>
       </DialogTrigger>
-      <DialogContent className="!max-w-[1440px] w-[96vw] h-[94dvh] max-h-[94dvh] flex flex-col p-0 overflow-hidden bg-[#0a0a0a] border-zinc-800">
+      <DialogContent className="!max-w-[1280px] w-[94vw] h-[90dvh] max-h-[90dvh] flex flex-col p-0 overflow-hidden bg-[#0a0a0a] border-zinc-800">
         <DialogHeader className="p-4 sm:px-8 sm:py-5 border-b border-zinc-800">
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="outline" className="rounded-sm bg-zinc-900 border-zinc-700 text-zinc-300">
@@ -54,50 +59,49 @@ export function TroubleshootingDialog({ logs }: { logs: ProblemSolving[] }) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-8 space-y-8">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-6 space-y-6">
           <div className="grid gap-8">
             {logs.map((ps, i) => (
-              <div key={i} className="p-4 sm:p-7 rounded-xl border border-zinc-800 bg-[#111111] flex flex-col xl:flex-row gap-8 xl:gap-10 items-start">
+              <div key={i} className="p-3 sm:p-6 rounded-xl border border-zinc-800 bg-[#111111] flex flex-col xl:flex-row gap-6 xl:gap-8 items-start">
                 
                 {/* Left: 텍스트 흐름 (문제 -> 원인 -> 해결 -> 결과) */}
-                <div className="w-full min-w-0 flex-1 space-y-7">
+                <div className="w-full min-w-0 max-w-[72ch] flex-1 space-y-5">
                   <h4 className="font-bold text-zinc-100 text-lg leading-snug break-keep border-b border-zinc-800 pb-3 mb-4">{ps.title}</h4>
                   
-                  <div className="grid grid-cols-1 gap-6">
-                    <div className="space-y-2">
-                      <h5 className="text-sm font-bold text-red-400 flex items-center gap-1.5">
+                  <div className="grid grid-cols-1 gap-5">
+                    <div className="space-y-3 rounded-lg border border-rose-900/30 border-l-2 border-l-rose-400/70 bg-rose-950/10 p-4 sm:p-5">
+                      <h5 className="text-sm font-bold text-rose-300 flex items-center gap-1.5">
                         <span className="bg-red-950 px-1.5 py-0.5 rounded text-red-400">🚨</span> 문제 상황
                       </h5>
-                      <RenderFormattedText text={ps.problem} className="text-zinc-400" />
+                      <RenderFormattedText text={ps.problem} className="text-zinc-300" accent="text-rose-200" />
                     </div>
-                    <div className="space-y-2">
-                      <h5 className="text-sm font-bold text-orange-400 flex items-center gap-1.5">
+                    <div className="space-y-3 rounded-lg border border-amber-900/30 border-l-2 border-l-amber-400/70 bg-amber-950/10 p-4 sm:p-5">
+                      <h5 className="text-sm font-bold text-amber-300 flex items-center gap-1.5">
                         <span className="bg-orange-950 px-1.5 py-0.5 rounded text-orange-400">🔎</span> 원인 분석
                       </h5>
-                      <RenderFormattedText text={ps.cause} className="text-zinc-400" />
+                      <RenderFormattedText text={ps.cause} className="text-zinc-300" accent="text-amber-200" />
                     </div>
                   </div>
 
-                  <div className="bg-blue-950/20 border border-blue-900/50 p-4 rounded-lg space-y-2">
+                  <div className="bg-sky-950/20 border border-sky-900/40 border-l-2 border-l-sky-400/70 p-4 sm:p-5 rounded-lg space-y-3">
                     <h5 className="text-sm font-bold text-blue-400 flex items-center gap-1.5">
                       <span className="bg-blue-900 px-1.5 py-0.5 rounded text-blue-300">💡</span> 해결 방법
                     </h5>
-                    <RenderFormattedText text={ps.solution} className="text-zinc-300 font-medium" />
+                    <RenderFormattedText text={ps.solution} className="text-zinc-300" accent="text-sky-200" />
 
                   </div>
 
-                  <div className="bg-green-950/20 border border-green-900/50 p-4 rounded-lg space-y-2">
+                  <div className="bg-emerald-950/20 border border-emerald-900/40 border-l-2 border-l-emerald-400/70 p-4 sm:p-5 rounded-lg space-y-3">
                     <h5 className="text-sm font-bold text-green-400 flex items-center gap-1.5">
                       <span className="bg-green-900 px-1.5 py-0.5 rounded text-green-300">🏆</span> 결과 및 성과
                     </h5>
-                    <RenderFormattedText text={ps.result} className="text-zinc-300 font-medium" />
+                    <RenderFormattedText text={ps.result} className="text-zinc-300" accent="text-emerald-200" />
                   </div>
                 </div>
 
                 {/* Right: Before/After 이미지 플레이스홀더 (조건부 렌더링) */}
                 {ps.hasImage !== false && (
                   <div className="w-full xl:w-[34%] min-w-0 shrink-0 border border-zinc-800 rounded-xl bg-[#111111] flex flex-col p-4 gap-5 self-start">
-                    {ps.imageNote && <p className="rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs leading-relaxed text-zinc-300">{ps.imageNote}</p>}
                     {ps.customVisual ? (
                       ps.customVisual
                     ) : ps.beforeImage && ps.afterImage ? (

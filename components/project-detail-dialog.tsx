@@ -38,7 +38,6 @@ export interface ProblemSolving {
   hasImage?: boolean
   beforeImage?: string | StaticImageData
   afterImage?: string | StaticImageData
-  imageNote?: string
   customVisual?: React.ReactNode
 }
 

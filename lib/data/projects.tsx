@@ -76,7 +76,6 @@ export const PROJECTS = [
         hasImage: true,
         beforeImage: project1Before,
         afterImage: project1After,
-        imageNote: "기존 포트폴리오의 장보기 화면 예시입니다. 표시된 금액·비율은 개별 예시이며, 실측 개선율이나 모든 추천의 예산 준수를 의미하지 않습니다.",
       },
       {
         title: "식단 비동기 실행 구조 개선 · 프로젝트 종료 후 (2026.08.15)",
