@@ -42,6 +42,7 @@ export interface ProblemSolving {
 }
 
 export interface ProjectContribution {
+  title?: string
   percentage?: string
   summary: string
   details: ContributionDetail[]
@@ -194,9 +195,9 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                     <div className="p-5 rounded-xl border border-zinc-800 bg-[#111111] shadow-sm">
                       <h4 className="font-bold text-white mb-3 flex flex-wrap items-center gap-2">
                         <Badge className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800 border-none text-xs rounded-sm px-2">Role & Contribution</Badge>
-                        담당 역할 및 기여도
+                        {project.contribution.title ?? "담당 역할 및 기여도"}
                       </h4>
-                      <p className="text-[15px] leading-[1.8] break-keep text-zinc-300">
+                      <p className="text-[15px] leading-[1.8] break-keep whitespace-pre-line text-zinc-300">
                         {project.contribution.summary}
                       </p>
                     </div>
@@ -347,7 +348,7 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                     <h4 className="font-bold text-zinc-200 text-[13px] mb-3">학습 결과</h4>
                     <p className="flex gap-2 text-[12px] text-zinc-400 leading-relaxed">
                       <span className="text-green-500 font-bold">✓</span>
-                      <span>{project.retrospective.lesson}</span>
+                      <span className="whitespace-pre-line">{project.retrospective.lesson}</span>
                     </p>
                   </div>
                 </div>
