@@ -42,6 +42,7 @@ export interface ProblemSolving {
 }
 
 export interface ProjectContribution {
+  detailsTitle?: string
   title?: string
   percentage?: string
   summary: string
@@ -262,7 +263,7 @@ export function ProjectDetailDialog({ project, children }: ProjectDetailDialogPr
                 {project.contribution?.details && (
                   <div className="flex-1 space-y-3">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                      개인 기여도 분석
+                      {project.contribution.detailsTitle ?? "개인 기여도 분석"}
                       {project.contribution.percentage && (
                       <Badge variant="outline" className="text-[11px] bg-blue-950/30 border-blue-900 text-blue-400 px-2 h-5">
                         전체 기여도 : {project.contribution.percentage}

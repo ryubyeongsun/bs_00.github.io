@@ -1,4 +1,3 @@
-import { CodeBlock } from "@/components/troubleshooting-dialog"
 import Image from "next/image"
 import project1Before from "@/public/projects/project1-before.png"
 import project1After from "@/public/projects/project1-after.png"
@@ -10,6 +9,7 @@ import project2Arch from "@/public/projects/project2-architecture.png"
 import project3Arch from "@/public/projects/project3-architecture.png"
 import { ConyPurchaseFlow } from "@/components/cony-purchase-flow"
 import { ConyArchitectureCompare } from "@/components/cony-architecture-compare"
+import { DuckchiAuthFlow } from "@/components/duckchi-auth-flow"
 import { DuckchiArchitectureCompare } from "@/components/duckchi-architecture-compare"
 
 export const PROJECTS = [
@@ -284,36 +284,45 @@ export const PROJECTS = [
       "AWS EC2",
       "RDS",
       "Prometheus",
-      "Grafana",
     ],
     contribution: {
-      percentage: "15%",
-      summary: "MSA 인프라 구축, 배포 자동화, 게이트웨이 인증 통합",
+      title: "담당 역할 및 주요 기여",
+      detailsTitle: "주요 기여 내용",
+      summary: "Gateway·Core·Pay·Insight·Discovery와 Redis의 Docker Compose 운영 구성을 만들고, Jenkins 빌드·이미지 생성·EC2 배포 절차를 자동화했습니다.\n카카오 OAuth 로그인과 JWT·Redis 토큰 관리를 구현하고, Gateway 인증 필터와 운영 HTTPS 리다이렉트 문제를 담당했습니다.",
       details: [
-        { title: "Docker Compose MSA 배포", percentage: 5, description: "5개 마이크로서비스와 Redis를 포함한 운영 Compose 구성" },
-        { title: "Spring Cloud Gateway JWT", percentage: 5, description: "라우팅 단일 진입점에서 토큰 검증 및 인가 처리" },
-        { title: "Jenkins CI/CD", percentage: 5, description: "CI·release job별 빌드와 이미지 생성·EC2 배포 흐름 구성" }
+        { title: "Docker Compose MSA 배포", description: "5개 백엔드 서비스와 Redis를 포함한 운영 Compose 구성" },
+        { title: "Spring Cloud Gateway JWT", description: "외부 사용자 ID 헤더 제거, JWT·블랙리스트 검증 후 인증된 사용자 ID 전달" },
+        { title: "Jenkins CI/CD", description: "CI·release job별 빌드와 이미지 생성·EC2 배포 흐름 구성" }
       ],
     },
     teamComposition: [
       { role: "프론트엔드", count: 1, isMe: false, tasks: "React Native 클라이언트 화면 구성 및 상태 관리" },
       { role: "풀스택", count: 4, isMe: false, tasks: "모임 정산, 결제 내역 등록, 소비 리포트 로직 개발" },
-      { role: "인프라 / 백엔드 (본인)", count: 1, isMe: true, tasks: "MSA 인프라 전체 구성, Gateway 인증 통합, CI/CD" }
+      { role: "인프라 / 백엔드 (본인)", count: 1, isMe: true, tasks: "Docker Compose 기반 MSA 운영 배포 구성, Gateway 인증 통합, CI/CD" }
     ],
     problemSolving: [
       {
-        title: "배포 후 모임방 생성 API 실패 해결",
-        problem: "• 로컬에선 정상 동작하던 '모임방 생성(POST)' API가 배포 후 지속 실패\n→ 405 Method Not Allowed 에러 발생",
-        cause: "• Nginx 301 상태 코드의 스펙 한계\n보안(HTTPS) 강제 전환을 위해 301 Moved Permanently 리다이렉트 사용 중\n\n• 프록시 계층 규약 충돌\n일부 클라이언트 환경에서 301 응답을 받고 재요청 시, 기존 POST 메서드를 GET으로 강제 변환하고 Body 페이로드를 버리는 HTTP 스펙 상의 종속성 문제 확인",
-        solution: "• 운영 Nginx HTTPS 리다이렉트를 308 Permanent Redirect로 변경\n공개 레포에는 Nginx 설정 파일이 없어 운영 서버 설정 기준으로 적용\n\n• HTTP 메서드 보존\n308 응답을 사용해 리다이렉트 후에도 POST 메서드와 Body가 유지되도록 조정",
-        result: "• [HTTP 메서드]\n일부 클라이언트의 POST → GET 변환 문제를 308 리다이렉트로 대응\n\n• [Body 데이터]\nHTTPS 재요청에서도 Body가 유지되도록 운영 설정 조정\n\n• [운영 설정]\nNginx 설정 파일은 공개 레포에 없으며, 서버 설정 기준으로 관리",
+        title: "HTTPS 리다이렉트 이후 모임방 생성 요청 실패 해결",
+        problem: "로컬에서는 정상 동작하던 모임방 생성 POST 요청이 운영 환경에서 405 Method Not Allowed로 실패했습니다.",
+        cause: "① HTTP → HTTPS 리다이렉트\n운영 Nginx가 301 응답으로 HTTPS 주소를 안내했습니다.\n\n② 클라이언트의 재요청 방식\n일부 클라이언트가 리다이렉트를 따라갈 때 POST를 GET으로 바꾸고 Body를 전달하지 않아, POST를 기대하는 API와 요청이 맞지 않았습니다.",
+        solution: "① 리다이렉트 응답 변경\n운영 Nginx의 HTTPS 리다이렉트를 301에서 308 Permanent Redirect로 변경했습니다.\n\n② 메서드·Body 보존\n클라이언트가 HTTPS 주소로 재요청할 때 POST 메서드와 Body를 유지하도록 조정했습니다.",
+        result: "[요청 방식] HTTPS 전환 후에도 POST 메서드 유지\n[요청 데이터] 재요청 시 Body 전달 유지\n[문제 범위] 애플리케이션 코드뿐 아니라 리다이렉트 응답과 클라이언트 재요청을 함께 점검",
         hasImage: true,
-        customVisual: <DuckchiArchitectureCompare />
-      }
+        customVisual: <DuckchiArchitectureCompare />,
+      },
+      {
+        title: "Gateway JWT 검증과 사용자 식별 헤더 통합",
+        problem: "여러 서비스로 요청을 전달하는 환경에서 인증된 사용자 ID를 일관되게 전달해야 했습니다. 클라이언트가 보낸 사용자 ID 헤더를 그대로 신뢰하지 않도록 요청 입구에서 검증이 필요했습니다.",
+        cause: "① 사용자 식별 정보의 신뢰 경계\n외부 요청의 X-User-Id는 클라이언트가 임의로 지정할 수 있습니다.\n\n② 로그아웃 토큰의 사용 제한\nJWT 서명과 만료 검증만으로는 로그아웃 처리된 Access Token을 구분할 수 없어 Redis blacklist 확인이 필요했습니다.",
+        solution: "① 외부 사용자 ID 제거\nGateway GlobalFilter에서 클라이언트가 보낸 X-User-Id 헤더를 가장 먼저 제거합니다.\n\n② 인증 예외와 보호 경로 구분\n인증 API·Swagger·Actuator 등 공개 경로는 인증 검증을 생략하고, 보호 경로는 Bearer Token을 확인합니다.\n\n③ Access Token 검증\nRedis blacklist를 확인하고 JWT 서명·만료를 검증합니다.\n\n④ 검증된 사용자 ID 전달\nJWT subject에서 추출한 사용자 ID를 X-User-Id 헤더로 새로 설정해 하위 서비스로 전달합니다. 검증 실패 시 401 응답을 반환합니다.\n\n⑤ 로그아웃 연동\nCore 서비스에서 Refresh Token을 Redis에서 삭제하고 Access Token은 남은 유효기간 동안 blacklist에 저장합니다.",
+        result: "[사용자 식별] 외부 입력 헤더 대신 검증된 JWT의 사용자 ID 전달\n[인증 실패] 보호 경로의 유효하지 않은 요청에 401 응답\n[로그아웃] 블랙리스트에 등록된 Access Token을 Gateway에서 차단",
+        hasImage: true,
+        customVisual: <DuckchiAuthFlow />,
+      },
     ],
     situation:
-      "친구/동료 모임에서 공동 결제 후 정산이 번거로운 사용자를 위해, 모임방 생성부터 정산/송금, 소비 리포트까지 한 흐름으로 제공하는 모바일 더치페이 서비스입니다. 프로젝트 후반에는 단순히 기능 구현을 넘어 실제 운영 환경에서 안정적으로 배포되고 동작하는 구조가 필요했고, 인증 흐름과 외부 연동, 프록시, 메시징, 모니터링까지 여러 계층의 문제가 동시에 드러났습니다.",
-    task: "인프라 담당으로서 EC2 기반 운영 환경에 MSA 서비스를 안정적으로 배포하고, CI/CD와 모니터링 체계를 구축해야 했습니다. 백엔드에서는 카카오 OAuth 로그인, JWT 토큰 관리, Redis 기반 세션 관리를 구현하고, 운영 환경에서 발생하는 인증/리다이렉트/시간대 이슈를 빠르게 해결하는 것이 핵심 과제였습니다.",
+      "친구·동료와의 공동 결제를 관리하는 모바일 더치페이 서비스입니다. 모임방에서 결제 내역을 등록하고, 정산 요청·송금과 소비 리포트를 한 흐름으로 제공합니다.",
+    task: "주요 기능: 카카오 로그인, 모임방 생성, 결제 내역 등록, 정산 요청·송금, 소비 리포트",
     action: `1. Docker Compose 기반 운영 환경 구성: EC2에서 Gateway, Core, Pay, Insight, Discovery 서비스와 Redis를 컨테이너로 구성. Kafka 이벤트 코드와 Prometheus 수집 설정은 별도 인프라 연동을 전제로 함.
 2. Jenkins CI/CD 분리: Jenkinsfile에서 CI job은 서비스 빌드, release job은 Docker Hub 이미지 푸시와 EC2 Docker Compose 재배포 흐름을 수행하도록 구성.
 3. Nginx + HTTPS 운영 이슈 대응: 운영 Nginx의 301→308 리다이렉트 변경으로 POST 메서드 유지 문제를 해결. 공개 레포에 Nginx 설정 파일은 없으며, API/SSE/정적 리소스별 프록시 정책은 향후 운영 설정 보강 과제.
@@ -324,134 +333,53 @@ export const PROJECTS = [
       "Docker Compose로 MSA 5개 서비스와 Redis를 재현 가능한 운영 구성으로 정리했습니다. Jenkins 파이프라인으로 반복적인 빌드·이미지 생성·EC2 배포 절차를 자동화했고, 운영 Nginx의 308 리다이렉트로 POST 메서드 유지 문제를 해결했습니다. Actuator와 Prometheus 수집 설정을 구성했으며 Grafana 대시보드·알림은 추가 보강 과제입니다.",
     retrospective: {
       regrets: [
-        "단일 EC2 운영으로 서비스가 늘어나면 리소스 한계. 멀티 노드(ECS, K8s) 전환을 고려해야 함",
-        "서킷 브레이커 미적용: 서비스 간 장애 전파 방지를 위한 Resilience4j 도입을 검토했으나 시간 부족으로 미적용",
+        "CI·release job의 백엔드 빌드에 -x test가 적용돼 테스트 통과를 배포 조건으로 검증하지 못함",
+        "현재 배포는 Compose down → pull → up 방식이며, 배포 후 상태 확인과 자동 롤백 단계가 없음",
+        "운영 Nginx 설정이 공개 저장소에 없고, Kafka·Prometheus 등 일부 운영 인프라는 Compose 외부 구성이 필요함",
       ],
       improvements: [
-        "Kubernetes(EKS) 전환으로 오토스케일링 및 셀프힐링 적용 검토",
-        "Resilience4j 서킷 브레이커 패턴 도입으로 서비스 간 장애 격리",
-        "Blue/Green 배포 전략 도입 검토 (현재 미구현)",
+        "향후 변경된 인증 필터와 테스트를 맞추고 CI에서 백엔드 테스트 실행을 복구",
+        "향후 배포 후 헬스체크와 핵심 API smoke test 추가",
+        "향후 배포 실패 시 이전 Docker 이미지 태그로 복구하는 롤백 절차 마련",
+        "향후 민감정보를 제외한 운영 설정을 버전 관리하고 외부 인프라 연결 조건 문서화",
+        "향후 Prometheus 수집 설정의 운영 연결을 검증하고 Grafana 대시보드·알림 정책 보강",
       ],
       lesson:
-        "\"로컬에서 되는데 운영에서 안 된다\"는 문제는 대부분 애플리케이션 코드가 아니라 프록시, 인증서, 리다이렉트 정책 같은 인프라 환경 차이에서 발생한다는 것을 체감했습니다. \"요청이 어디서 변형되는가\"를 기준으로 원인을 좁히는 디버깅 습관을 만들었습니다.",
+        "운영 장애에서는 요청이 어느 구간에서 달라지는지 추적해야 한다는 점을 배웠습니다.\n인증은 토큰 검증과 사용자 정보 전달의 신뢰 경계를 함께 설계해야 합니다.\n배포 자동화도 빌드·실행을 넘어 테스트와 배포 후 상태 확인·복구까지 이어져야 합니다.",
     },
     image: project3,
     architectureImage: project3Arch,
+    githubLink: "https://github.com/ryubyeongsun/duckchi_pj",
     techReasons: [
-      { label: "Docker Compose & Jenkins", desc: "5개 서비스와 Redis를 Compose로 구성하고, Jenkins에서 서비스 빌드·이미지 생성·푸시·EC2 배포 절차를 반복 가능하게 만들었습니다." },
-      { label: "Spring Cloud Gateway", desc: "각 마이크로서비스마다 중복되는 인증 로직을 전역 필터(JWT)로 중앙 제어하여 단일 진입점을 확보했습니다." },
-      { label: "Kafka Event Broker", desc: "결제·인사이트 등 일부 도메인 이벤트를 Kafka producer/consumer로 비동기 전달해 직접 동기 호출 의존도를 줄이는 방향으로 구성했습니다." }
+      { label: "Docker Compose & Jenkins", desc: "5개 백엔드 서비스와 Redis의 실행 구성을 정의하고, CI 빌드와 release 이미지 생성·Docker Hub 푸시·EC2 배포 흐름을 분리했습니다." },
+      { label: "Spring Cloud Gateway", desc: "서비스 진입점에서 JWT를 검증하고 외부 X-User-Id를 제거한 뒤, 검증된 사용자 ID를 하위 서비스에 전달하기 위해 사용했습니다." },
+      { label: "JWT & Redis", desc: "Access/Refresh Token을 분리하고 Redis에 Refresh Token을 저장합니다.\n로그아웃 시 Refresh Token을 삭제하고 Access Token은 남은 유효기간 동안 블랙리스트로 관리합니다." },
     ],
     troubleshooting: {
-      title:
-        "Nginx 301 리다이렉트로 POST 요청이 GET으로 바뀌며 모임방 생성이 실패한 문제 해결",
+      title: "운영 리다이렉트 대응 및 Gateway 인증 흐름",
       date: "2026-03",
-      environment:
-        "AWS EC2, Docker Compose, Nginx, Spring Cloud Gateway, HTTPS",
+      environment: "AWS EC2, Docker Compose, Nginx, Spring Cloud Gateway, JWT, Redis",
       sections: [
         {
-          title: "1. 문제 상황 (Symptoms)",
-          content: (
-            <ul className="list-disc list-inside space-y-1">
-              <li>
-                <strong>현상:</strong> 앱에서 모임방 생성 API를 호출하면
-                클라이언트 기준으로는 정상 요청처럼 보였지만, 운영 환경에서만{" "}
-                <code>POST /api/...</code> 요청이 실패했습니다.
-              </li>
-              <li>
-                <strong>영향:</strong> 로컬과 개발 환경에서는 정상 동작했지만
-                HTTPS가 적용된 운영 환경에서 핵심 생성 기능이 막혀 실제 서비스
-                이용이 불가능했습니다.
-              </li>
-              <li>
-                <strong>초기 오해:</strong> 처음에는 Gateway 라우팅이나 Spring
-                Controller 문제를 의심했지만, 애플리케이션 로그에는 아예 기대한
-                POST 요청이 남지 않았습니다.
-              </li>
-            </ul>
-          ),
-        },
-        {
-          title: "2. 원인 분석 (Root Cause Analysis)",
+          title: "1. HTTPS 리다이렉트 이후 모임방 생성 요청 실패 해결",
           content: (
             <div className="space-y-4">
-              <div>
-                <strong>2.1 프록시 계층에서 메서드 변경 발생</strong>
-                <p className="mt-1">
-                  Nginx가 HTTP 요청을 HTTPS로 넘기기 위해 사용하던{" "}
-                  <code>301</code> 리다이렉트가 문제였습니다. 일부 클라이언트
-                  환경에서는 리다이렉트 이후 원래의 <code>POST</code> 메서드를
-                  유지하지 않고 <code>GET</code>으로 재요청했습니다.
-                </p>
-              </div>
-              <div>
-                <strong>2.2 애플리케이션보다 앞단 로그를 먼저 확인</strong>
-                <p className="mt-1">
-                  Spring 로그보다 Nginx access log와 redirect 동작을 먼저
-                  확인하면서, 요청이 애플리케이션에 도달하기 전 프록시 계층에서
-                  변형되고 있다는 점을 파악했습니다.
-                </p>
-                <CodeBlock label="문제 상황 요약">
-                  {`Client POST /api/v1/rooms
--> Nginx 301 redirect to HTTPS
--> Client replays request as GET
--> Gateway/Backend expects POST, request mismatch 발생`}
-                </CodeBlock>
-              </div>
+              <div><strong>문제 상황</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"로컬에서는 정상 동작하던 모임방 생성 POST 요청이 운영 환경에서 405 Method Not Allowed로 실패했습니다."}</p></div>
+              <div><strong>원인 분석</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"① HTTP → HTTPS 리다이렉트\n운영 Nginx가 301 응답으로 HTTPS 주소를 안내했습니다.\n\n② 클라이언트의 재요청 방식\n일부 클라이언트가 리다이렉트를 따라갈 때 POST를 GET으로 바꾸고 Body를 전달하지 않아, POST를 기대하는 API와 요청이 맞지 않았습니다."}</p></div>
+              <div><strong>해결 방법</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"① 리다이렉트 응답 변경\n운영 Nginx의 HTTPS 리다이렉트를 301에서 308 Permanent Redirect로 변경했습니다.\n\n② 메서드·Body 보존\n클라이언트가 HTTPS 주소로 재요청할 때 POST 메서드와 Body를 유지하도록 조정했습니다."}</p></div>
+              <div><strong>결과 및 성과</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"[요청 방식] HTTPS 전환 후에도 POST 메서드 유지\n[요청 데이터] 재요청 시 Body 전달 유지\n[문제 범위] 애플리케이션 코드뿐 아니라 리다이렉트 응답과 클라이언트 재요청을 함께 점검"}</p></div>
             </div>
           ),
         },
         {
-          title: "3. 해결 방법 (Resolution)",
+          title: "2. Gateway JWT 검증과 사용자 식별 헤더 통합",
           content: (
             <div className="space-y-4">
-              <div>
-                <strong>3.1 301 대신 308 리다이렉트 적용</strong>
-                <p className="mt-1">
-                  메서드와 body를 유지하는 <code>308 Permanent Redirect</code>로
-                  변경해 클라이언트가 HTTPS 재요청 시에도 POST 요청을 그대로
-                  유지하도록 수정했습니다.
-                </p>
-                <CodeBlock label="운영 Nginx 설정 예시 (레포 미포함)">
-                  {`server {
-    listen 80;
-    server_name duckchi.example.com;
-    return 308 https://$host$request_uri;
-}`}
-                </CodeBlock>
-              </div>
-              <div>
-                <strong>3.2 경로별 프록시 설정 점검</strong>
-                <p className="mt-1">
-                  API, SSE, 정적 리소스처럼 요청 특성이 다른 경로는 프록시 설정을
-                  분리할 필요가 있음을 확인했습니다. 공개 레포에는 해당 Nginx 경로별
-                  설정이 없어, SSE 버퍼링과 timeout 설정은 향후 운영 설정 보강 과제로
-                  정리했습니다.
-                </p>
-              </div>
+              <div><strong>문제 상황</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"여러 서비스로 요청을 전달하는 환경에서 인증된 사용자 ID를 일관되게 전달해야 했습니다. 클라이언트가 보낸 사용자 ID 헤더를 그대로 신뢰하지 않도록 요청 입구에서 검증이 필요했습니다."}</p></div>
+              <div><strong>원인 분석</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"① 사용자 식별 정보의 신뢰 경계\n외부 요청의 X-User-Id는 클라이언트가 임의로 지정할 수 있습니다.\n\n② 로그아웃 토큰의 사용 제한\nJWT 서명과 만료 검증만으로는 로그아웃 처리된 Access Token을 구분할 수 없어 Redis blacklist 확인이 필요했습니다."}</p></div>
+              <div><strong>해결 방법</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"① 외부 사용자 ID 제거\nGateway GlobalFilter에서 클라이언트가 보낸 X-User-Id 헤더를 가장 먼저 제거합니다.\n\n② 인증 예외와 보호 경로 구분\n인증 API·Swagger·Actuator 등 공개 경로는 인증 검증을 생략하고, 보호 경로는 Bearer Token을 확인합니다.\n\n③ Access Token 검증\nRedis blacklist를 확인하고 JWT 서명·만료를 검증합니다.\n\n④ 검증된 사용자 ID 전달\nJWT subject에서 추출한 사용자 ID를 X-User-Id 헤더로 새로 설정해 하위 서비스로 전달합니다. 검증 실패 시 401 응답을 반환합니다.\n\n⑤ 로그아웃 연동\nCore 서비스에서 Refresh Token을 Redis에서 삭제하고 Access Token은 남은 유효기간 동안 blacklist에 저장합니다."}</p></div>
+              <div><strong>결과 및 성과</strong><p className="mt-2 whitespace-pre-line leading-relaxed">{"[사용자 식별] 외부 입력 헤더 대신 검증된 JWT의 사용자 ID 전달\n[인증 실패] 보호 경로의 유효하지 않은 요청에 401 응답\n[로그아웃] 블랙리스트에 등록된 Access Token을 Gateway에서 차단"}</p></div>
             </div>
-          ),
-        },
-        {
-          title: "4. 결과와 배운 점 (Results & Lessons)",
-          content: (
-            <ul className="list-disc list-inside space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-md">
-              <li>
-                <strong>결과:</strong> 운영 Nginx의 308 리다이렉트 적용으로 HTTPS
-                전환 이후에도 POST 메서드와 Body가 유지되도록 조정했습니다. 설정 파일은
-                공개 레포가 아닌 운영 서버에서 관리했습니다.
-              </li>
-              <li>
-                <strong>운영 관점:</strong> 로컬에서는 재현되지 않는 문제일수록
-                애플리케이션 코드보다 프록시, 인증서, 리다이렉트 정책 같은 환경
-                차이를 먼저 봐야 한다는 점을 배웠습니다.
-              </li>
-              <li>
-                <strong>확장:</strong> 이후 App Link, SSE, 외부 Redirect URI 같은
-                프록시 의존 기능을 점검할 때도 동일하게 &ldquo;요청이 어디서
-                변형되는가&rdquo;를 기준으로 원인을 좁히는 습관을 만들었습니다.
-              </li>
-            </ul>
           ),
         },
       ],
